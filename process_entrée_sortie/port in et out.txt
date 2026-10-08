@@ -1,0 +1,802 @@
+📋 TOUS les Ports IN (Use Cases) - Liste complète
+Je vais te donner TOUS les Use Cases organisés par module.
+
+1️⃣ MODULE AGENT
+Port IN : AgentUseCases
+java
+// application/port/in/agent/
+Use Case	Description	Méthode
+CreateAgentUseCase	Créer un nouvel agent	Agent execute(CreateAgentCommand)
+UpdateAgentUseCase	Modifier les infos d'un agent	Agent execute(UpdateAgentCommand)
+ChangeAgentEmailUseCase	Changer l'email d'un agent	Agent execute(ChangeEmailCommand)
+ChangeAgentRoleUseCase	Changer le rôle d'un agent	Agent execute(ChangeRoleCommand)
+GetAgentByIdUseCase	Récupérer un agent par ID	Agent execute(Long agentId)
+GetAgentByCodeUseCase	Récupérer un agent par code	Agent execute(String codeAgent)
+ListAgentsUseCase	Lister tous les agents (pagination)	List<Agent> execute(ListAgentsQuery)
+SearchAgentsUseCase	Rechercher des agents (filtres)	List<Agent> execute(SearchAgentsQuery)
+DeleteAgentUseCase	Supprimer un agent	void execute(Long agentId)
+Détail des Commands :
+java
+record CreateAgentCommand(String codeAgent, String nom, String prenom, String email, String role) {}
+record UpdateAgentCommand(Long agentId, String nom, String prenom, String email) {}
+record ChangeEmailCommand(Long agentId, String newEmail) {}
+record ChangeRoleCommand(Long agentId, String newRole) {}
+record ListAgentsQuery(int page, int size, String sortBy, String direction) {}
+record SearchAgentsQuery(String searchTerm, String role, Long directionId) {}
+
+2️⃣ MODULE AFFECTATION
+Port IN : AffectationUseCases
+java
+// application/port/in/affectation/
+Use Case	Description	Méthode
+CreateAffectationUseCase	Créer une affectation agent/direction	AgentAffectation execute(CreateAffectationCommand)
+UpdateAffectationUseCase	Modifier une affectation	AgentAffectation execute(UpdateAffectationCommand)
+AssignResponsableUseCase	Assigner un responsable	AgentAffectation execute(AssignResponsableCommand)
+AssignAgentAccueilUseCase	Assigner un agent d'accueil	AgentAffectation execute(AssignAgentAccueilCommand)
+TerminerAffectationUseCase	Terminer une affectation (départ)	AgentAffectation execute(TerminerAffectationCommand)
+ActiverAffectationUseCase	Activer une affectation (ENTREE → ACTIF)	AgentAffectation execute(Long affectationId)
+GetAffectationByIdUseCase	Récupérer une affectation par ID	AgentAffectation execute(Long affectationId)
+GetAffectationsActivesByAgentUseCase	Récupérer affectations actives d'un agent	List<AgentAffectation> execute(Long agentId)
+GetHistoriqueAffectationsUseCase	Historique complet des affectations	List<AgentAffectation> execute(Long agentId)
+Détail des Commands :
+java
+record CreateAffectationCommand(Long agentId, Long directionId, String fonction, String service, LocalDate dateArrivee,  LocalDate dateDepart) {}
+record UpdateAffectationCommand(Long affectationId, String fonction, String service, LocalDate dateDepart) {}
+record AssignResponsableCommand(Long affectationId, Long responsableId) {}
+record AssignAgentAccueilCommand(Long affectationId, Long agentAccueilId) {}
+record TerminerAffectationCommand(Long affectationId, LocalDate dateDepart) {}
+
+3️⃣ MODULE TEMPLATE PROCESSUS
+Port IN : TemplateProcessusUseCases
+java
+// application/port/in/template/
+Use Case	Description	Méthode
+CreateTemplateProcessusUseCase	Créer un template de processus	TemplateProcessus execute(CreateTemplateCommand)
+UpdateTemplateProcessusUseCase	Modifier un template	TemplateProcessus execute(UpdateTemplateCommand)
+DuplicateTemplateProcessusUseCase	Dupliquer un template	TemplateProcessus execute(Long templateId)
+ActivateTemplateProcessusUseCase	Activer un template	TemplateProcessus execute(Long templateId)
+DeactivateTemplateProcessusUseCase	Désactiver un template	TemplateProcessus execute(Long templateId)
+DeleteTemplateProcessusUseCase	Supprimer un template	void execute(Long templateId)
+GetTemplateProcessusByIdUseCase	Récupérer un template par ID	TemplateProcessus execute(Long templateId)
+ListTemplatesProcessusUseCase	Lister tous les templates	List<TemplateProcessus> execute(ListTemplatesQuery)
+GetTemplatesByTypeUseCase	Récupérer templates par type	List<TemplateProcessus> execute(String type)
+Détail des Commands :
+java
+record CreateTemplateCommand(String code, String libelle, String type, String description) {}
+record UpdateTemplateCommand(Long templateId, String libelle, String description) {}
+record ListTemplatesQuery(boolean activesOnly, String type) {}
+
+Port IN : TemplateEditorUseCases (Éditeur)
+java
+// application/port/in/template/editor/
+Use Case	Description	Méthode
+StartEditSessionUseCase	Démarrer session d'édition	String execute(StartEditCommand) (retourne sessionId)
+AddGroupeToTemplateUseCase	Ajouter un groupe au template	TemplateProcessus execute(AddGroupeCommand)
+RemoveGroupeFromTemplateUseCase	Retirer un groupe	TemplateProcessus execute(RemoveGroupeCommand)
+ReorderGroupesInTemplateUseCase	Réordonner les groupes	TemplateProcessus execute(ReorderGroupesCommand)
+AddTacheToGroupeUseCase	Ajouter une tâche à un groupe	TemplateProcessus execute(AddTacheCommand)
+RemoveTacheFromGroupeUseCase	Retirer une tâche	TemplateProcessus execute(RemoveTacheCommand)
+ReorderTachesInGroupeUseCase	Réordonner les tâches	TemplateProcessus execute(ReorderTachesCommand)
+PreviewTemplateUseCase	Prévisualiser le template	TemplateProcessus execute(String sessionId)
+SaveTemplateFromSessionUseCase	Sauvegarder le template final	TemplateProcessus execute(String sessionId)
+
+4️⃣ MODULE PROCESSUS (Instances)
+Port IN : ProcessusUseCases
+java
+// application/port/in/processus/
+Use Case	Description	Méthode
+CreateProcessusFromTemplateUseCase	Créer processus depuis template	Processus execute(CreateProcessusCommand)
+StartProcessusUseCase	Démarrer un processus	Processus execute(Long processusId)
+CancelProcessusUseCase	Annuler un processus	Processus execute(Long processusId)
+CompleteProcessusUseCase	Terminer un processus	Processus execute(Long processusId)
+UpdateProcessusEcheanceUseCase	Modifier date d'échéance	Processus execute(UpdateEcheanceCommand)
+GetProcessusByIdUseCase	Récupérer un processus par ID	Processus execute(Long processusId)
+GetProcessusByAgentUseCase	Récupérer processus d'un agent	List<Processus> execute(Long agentId)
+ListProcessusActifsUseCase	Lister processus actifs	List<Processus> execute()
+ListProcessusByStatutUseCase	Lister par statut	List<Processus> execute(StatutProcessus statut)
+GetProcessusDetailsUseCase	Détails complets d'un processus	ProcessusDetails execute(Long processusId)
+CalculateProcessusAvancementUseCase	Calculer taux d'avancement	double execute(Long processusId)
+GetProcessusEnRetardUseCase	Récupérer processus en retard	List<Processus> execute()
+Détail des Commands :
+java
+record CreateProcessusCommand(Long agentId, Long templateId, LocalDate dateDebut) {}
+record UpdateEcheanceCommand(Long processusId, LocalDate nouvelleEcheance) {}
+
+5️⃣ MODULE GROUPE TÂCHE
+Port IN : GroupeTacheUseCases
+java
+// application/port/in/groupetache/
+Use Case	Description	Méthode
+StartGroupeTacheUseCase	Démarrer un groupe	GroupeTache execute(Long groupeId)
+CompleteGroupeTacheUseCase	Terminer un groupe	GroupeTache execute(Long groupeId)
+GetGroupeTacheByIdUseCase	Récupérer un groupe par ID	GroupeTache execute(Long groupeId)
+ListGroupesByProcessusUseCase	Lister groupes d'un processus	List<GroupeTache> execute(Long processusId)
+GetGroupesPretsDemarrerUseCase	Groupes prêts à démarrer	List<GroupeTache> execute(Long processusId)
+GetGroupesBloqueesUseCase	Groupes bloqués par dépendances	List<GroupeTache> execute(Long processusId)
+
+6️⃣ MODULE TÂCHE
+Port IN : TacheUseCases
+java
+// application/port/in/tache/
+Use Case	Description	Méthode
+AssignAgentToTacheUseCase	Assigner un agent à une tâche	Tache execute(AssignAgentCommand)
+UnassignAgentFromTacheUseCase	Retirer un agent d'une tâche	Tache execute(UnassignAgentCommand)
+StartTacheUseCase	Démarrer une tâche	Tache execute(Long tacheId)
+CompleteTacheUseCase	Terminer une tâche	Tache execute(Long tacheId)
+ReopenTacheUseCase	Réouvrir une tâche	Tache execute(Long tacheId)
+UpdateTacheEcheanceUseCase	Modifier date d'échéance	Tache execute(UpdateTacheEcheanceCommand)
+SubmitFormTacheUseCase	Soumettre formulaire (type FORM)	Tache execute(SubmitFormCommand)
+GetTacheByIdUseCase	Récupérer une tâche par ID	Tache execute(Long tacheId)
+ListTachesByProcessusUseCase	Lister tâches d'un processus	List<Tache> execute(Long processusId)
+ListTachesByAgentUseCase	Lister tâches d'un agent	List<Tache> execute(Long agentId)
+ListTachesEnRetardUseCase	Lister tâches en retard	List<Tache> execute()
+GetMyTachesUseCase	Tâches de l'utilisateur connecté	List<Tache> execute()
+GetTachesPretsDemarrerUseCase	Tâches prêtes à démarrer	List<Tache> execute(Long processusId)
+GetTachesBloqueesUseCase	Tâches bloquées par dépendances	List<Tache> execute(Long processusId)
+Détail des Commands :
+java
+record AssignAgentCommand(Long tacheId, Long agentId) {}
+record UnassignAgentCommand(Long tacheId, Long agentId) {}
+record UpdateTacheEcheanceCommand(Long tacheId, LocalDate nouvelleEcheance) {}
+record SubmitFormCommand(Long tacheId, String contenuJson) {}
+
+7️⃣ MODULE DÉPENDANCE
+Port IN : DependanceUseCases
+java
+// application/port/in/dependance/
+Use Case	Description	Méthode
+CreateDependanceUseCase	Créer une dépendance	Dependance execute(CreateDependanceCommand)
+DeleteDependanceUseCase	Supprimer une dépendance	void execute(Long dependanceId)
+ValidateDependancesUseCase	Valider qu'il n'y a pas de cycles	boolean execute(Long processusId)
+GetDependancesByTacheUseCase	Dépendances d'une tâche	List<Dependance> execute(Long tacheId)
+GetDependancesByProcessusUseCase	Toutes les dépendances d'un processus	List<Dependance> execute(Long processusId)
+DetectCycleInDependancesUseCase	Détecter cycles dans dépendances	boolean execute(Long processusId)
+Détail des Commands :
+java
+record CreateDependanceCommand(
+    TypeSource sourceType, 
+    Long sourceId, 
+    TypeCible cibleType, 
+    Long cibleId
+) {}
+
+8️⃣ MODULE NOTIFICATION
+Port IN : NotificationUseCases
+java
+// application/port/in/notification/
+Use Case	Description	Méthode
+SendNotificationUseCase	Envoyer une notification	Notification execute(SendNotificationCommand)
+SendNotificationToGroupeUseCase	Envoyer à un groupe d'agents	List<Notification> execute(SendToGroupeCommand)
+SendBulkNotificationsUseCase	Envoi en masse	List<Notification> execute(SendBulkCommand)
+MarkNotificationAsReadUseCase	Marquer comme lue	void execute(Long notificationId)
+MarkAllNotificationsAsReadUseCase	Marquer toutes comme lues	void execute(Long agentId)
+DeleteNotificationUseCase	Supprimer une notification	void execute(Long notificationId)
+GetNotificationByIdUseCase	Récupérer une notification	Notification execute(Long notificationId)
+ListNotificationsByAgentUseCase	Notifications d'un agent	List<Notification> execute(Long agentId)
+ListUnreadNotificationsUseCase	Notifications non lues	List<Notification> execute(Long agentId)
+CountUnreadNotificationsUseCase	Compter notifications non lues	int execute(Long agentId)
+Détail des Commands :
+java
+record SendNotificationCommand(Long templateId, Long tacheId, List<Long> destinatairesIds) {}
+record SendToGroupeCommand(Long templateId, Long groupeId) {}
+record SendBulkCommand(Long templateId, List<Long> tachesIds) {}
+
+Port IN : NotificationScheduledUseCases (Automatisés)
+java
+// application/port/in/notification/scheduled/
+Use Case	Description	Méthode
+SendRappelTacheEcheanceUseCase	Rappel X jours avant échéance	void execute() (scheduled)
+SendAlerteTacheEnRetardUseCase	Alerte tâche en retard	void execute() (scheduled)
+SendNotificationProcessusTermineUseCase	Notification fin de processus	void execute(Long processusId)
+SendDailyRemindersUseCase	Rappels quotidiens	void execute() (scheduled)
+SendWeeklyReportUseCase	Rapport hebdomadaire	void execute() (scheduled)
+
+9️⃣ MODULE DIRECTION
+Port IN : DirectionUseCases
+java
+// application/port/in/direction/
+Use Case	Description	Méthode
+CreateDirectionUseCase	Créer une direction	Direction execute(CreateDirectionCommand)
+UpdateDirectionUseCase	Modifier une direction	Direction execute(UpdateDirectionCommand)
+DeleteDirectionUseCase	Supprimer une direction	void execute(Long directionId)
+GetDirectionByIdUseCase	Récupérer une direction	Direction execute(Long directionId)
+ListDirectionsUseCase	Lister toutes les directions	List<Direction> execute()
+GetDirectionStatisticsUseCase	Stats par direction	DirectionStatistics execute(Long directionId)
+
+🔟 MODULE STATISTIQUES & RAPPORTS
+Port IN : StatisticsUseCases
+java
+// application/port/in/statistics/
+Use Case	Description	Méthode
+GetDashboardGlobalUseCase	Dashboard général	DashboardData execute()
+GetDashboardRHUseCase	Dashboard RH	DashboardRHData execute()
+GetDashboardITUseCase	Dashboard IT	DashboardITData execute()
+GetProcessusStatsByTypeUseCase	Stats par type de processus	StatsByType execute()
+GetProcessusStatsByDirectionUseCase	Stats par direction	StatsByDirection execute(Long directionId)
+GetAvgProcessusDurationUseCase	Durée moyenne processus	double execute()
+GetProcessusCompletionRateUseCase	Taux de complétion	double execute()
+GetTachesEnRetardByDirectionUseCase	Tâches en retard par direction	Map<Direction, List<Tache>> execute()
+GenerateRapportProcessusUseCase	Générer rapport PDF	byte[] execute(Long processusId)
+ExportProcessusToExcelUseCase	Export Excel processus	byte[] execute(ExportQuery)
+
+📤 TOUS les Ports OUT (Dépendances) - Liste complète
+Maintenant, les interfaces dont l'application a besoin (implémentées par l'infrastructure).
+
+1️⃣ Ports OUT : Repositories (Persistence)
+AgentRepository
+java
+// application/port/out/agent/AgentRepository.java
+Description : Gestion de la persistence des agents
+Méthode	Description
+Agent save(Agent agent)	Sauvegarder un agent (create ou update)
+Optional<Agent> findById(Long id)	Trouver un agent par ID
+Optional<Agent> findByCodeAgent(String code)	Trouver par code agent
+boolean existsByCodeAgent(String code)	Vérifier si code existe
+List<Agent> findAll(int page, int size, String sort, String dir)	Lister avec pagination
+List<Agent> search(String term, String role, Long directionId)	Rechercher avec filtres
+void delete(Agent agent)	Supprimer un agent
+long count()	Compter total agents
+
+AffectationRepository
+java
+// application/port/out/affectation/AffectationRepository.java
+Description : Gestion des affectations agent/direction
+Méthode	Description
+AgentAffectation save(AgentAffectation affectation)	Sauvegarder une affectation
+Optional<AgentAffectation> findById(Long id)	Trouver par ID
+List<AgentAffectation> findByAgentId(Long agentId)	Toutes les affectations d'un agent
+List<AgentAffectation> findActivesByAgentId(Long agentId)	Affectations actives d'un agent
+List<AgentAffectation> findByDirectionId(Long directionId)	Affectations d'une direction
+Optional<AgentAffectation> findCurrentByAgentId(Long agentId)	Affectation courante d'un agent
+void delete(AgentAffectation affectation)	Supprimer une affectation
+
+ProcessusRepository
+java
+// application/port/out/processus/ProcessusRepository.java
+Description : Gestion des processus (instances)
+Méthode	Description
+Processus save(Processus processus)	Sauvegarder un processus
+Optional<Processus> findById(Long id)	Trouver par ID
+List<Processus> findByAgentId(Long agentId)	Processus d'un agent
+List<Processus> findByStatut(StatutProcessus statut)	Processus par statut
+boolean existsByAgentIdAndStatut(Long agentId, StatutProcessus statut)	Vérifier processus actif
+List<Processus> findActifs()	Tous les processus actifs
+List<Processus> findEnRetard()	Processus en retard
+List<Processus> findByDirectionId(Long directionId)	Processus d'une direction
+void delete(Processus processus)	Supprimer un processus
+long count()	Compter total processus
+long countByStatut(StatutProcessus statut)	Compter par statut
+
+TacheRepository
+java
+// application/port/out/tache/TacheRepository.java
+Description : Gestion des tâches
+Méthode	Description
+Tache save(Tache tache)	Sauvegarder une tâche
+Optional<Tache> findById(Long id)	Trouver par ID
+List<Tache> findByProcessusId(Long processusId)	Tâches d'un processus
+List<Tache> findByAgentId(Long agentId)	Tâches assignées à un agent
+List<Tache> findByStatut(StatutTache statut)	Tâches par statut
+List<Tache> findEnRetard()	Tâches en retard
+List<Tache> findByGroupeId(Long groupeId)	Tâches d'un groupe
+void delete(Tache tache)	Supprimer une tâche
+
+DependanceRepository
+java
+// application/port/out/dependance/DependanceRepository.java
+Description : Gestion des dépendances entre tâches/groupes
+Méthode	Description
+Dependance save(Dependance dependance)	Sauvegarder une dépendance
+Optional<Dependance> findById(Long id)	Trouver par ID
+List<Dependance> findByProcessusId(Long processusId)	Toutes les dépendances d'un processus
+List<Dependance> findByTacheId(Long tacheId)	Dépendances d'une tâche
+List<Dependance> findByGroupeId(Long groupeId)	Dépendances d'un groupe
+void delete(Dependance dependance)	Supprimer une dépendance
+
+TemplateProcessusRepository
+java
+// application/port/out/template/TemplateProcessusRepository.java
+Description : Gestion des templates de processus
+Méthode	Description
+TemplateProcessus save(TemplateProcessus template)	Sauvegarder un template
+Optional<TemplateProcessus> findById(Long id)	Trouver par ID
+List<TemplateProcessus> findAll()	Tous les templates
+List<TemplateProcessus> findActifs()	Templates actifs
+List<TemplateProcessus> findByType(String type)	Templates par type
+void delete(TemplateProcessus template)	Supprimer un template
+long count()	Compter total templates
+
+NotificationRepository
+java
+// application/port/out/notification/NotificationRepository.java
+Description : Gestion des notifications
+Méthode	Description
+Notification save(Notification notification)	Sauvegarder une notification
+Optional<Notification> findById(Long id)	Trouver par ID
+List<Notification> findByAgentId(Long agentId)	Notifications d'un agent
+List<Notification> findUnreadByAgentId(Long agentId)	Notifications non lues
+int countUnreadByAgentId(Long agentId)	Compter non lues
+void markAsRead(Long notificationId)	Marquer comme lue
+void markAllAsReadByAgentId(Long agentId)	Marquer toutes comme lues
+void delete(Notification notification)	Supprimer une notification
+void deleteOldNotifications(LocalDate before)	Nettoyer vieilles notifications
+
+DirectionRepository
+java
+// application/port/out/direction/DirectionRepository.java
+Description : Gestion des directions
+Méthode	Description
+Direction save(Direction direction)	Sauvegarder une direction
+Optional<Direction> findById(Long id)	Trouver par ID
+List<Direction> findAll()	Toutes les directions
+void delete(Direction direction)	Supprimer une direction
+
+2️⃣ Ports OUT : Services externes
+NotificationService
+java
+// application/port/out/notification/NotificationService.java
+Description : Service d'envoi de notifications (email, SMS...)
+Méthode	Description
+void notifyAgentCreated(Agent agent)	Notifier création agent
+void notifyAgentUpdated(Agent agent)	Notifier modification agent
+void notifyAgentDeleted(Agent agent)	Notifier suppression agent
+void notifyProcessusCreated(Processus processus)	Notifier création processus
+void notifyProcessusStarted(Processus processus)	Notifier démarrage processus
+void notifyProcessusCompleted(Processus processus)	Notifier fin processus
+void notifyTacheAssigned(Tache tache, Long agentId)	Notifier assignation tâche
+void notifyTacheCompleted(Tache tache)	Notifier tâche terminée
+void sendCustomNotification(Long agentId, String subject, String body)	Notification personnalisée
+
+EmailService
+java
+// application/port/out/email/EmailService.java
+Description : Service d'envoi d'emails
+Méthode	Description
+void sendEmail(String to, String subject, String body)	Envoyer un email simple
+void sendEmailWithAttachment(String to, String subject, String body, byte[] attachment)	Email avec pièce jointe
+void sendBulkEmail(List<String> recipients, String subject, String body)	Envoi en masse
+
+ReportService
+java
+// application/port/out/report/ReportService.java
+Description : Service de génération de rapports
+Méthode	Description
+byte[] generateProcessusReportPdf(Processus processus)	Générer rapport PDF processus
+byte[] generateMonthlyReportPdf(int year, int month)	Rapport mensuel PDF
+byte[] exportProcessusToExcel(List<Processus> processus)	Export Excel processus
+byte[] exportTachesToExcel(List<Tache> taches)	Export Excel tâches
+
+StorageService
+java
+// application/port/out/storage/StorageService.java
+Description : Service de stockage de fichiers (si besoin)
+Méthode	Description
+String storeFile(byte[] data, String filename)	Stocker un fichier
+byte[] retrieveFile(String fileId)	Récupérer un fichier
+void deleteFile(String fileId)	Supprimer un fichier
+
+🧩 Services Domain
+DependanceValidationService
+java
+// domain/service/DependanceValidationService.java
+```
+**Description** : Validation des dépendances entre tâches/groupes (logique métier pure)
+| Méthode | Description |
+|---------|-------------|
+| `boolean groupePeutDemarrer(...)` | Vérifier si un groupe peut démarrer |
+| `List<GroupeTache> getGroupesPretsDemarrer(...)` | Groupes prêts à démarrer |
+| `List<GroupeTache> getGroupesBloques(...)` | Groupes bloqués |
+| `boolean tachePeutDemarrer(...)` | Vérifier si une tâche peut démarrer |
+| `List<Tache> getTachesPretsDemarrerDansGroupe(...)` | Tâches prêtes dans un groupe |
+| `List<Tache> getToutesTachesPretsDemarrer(...)` | Toutes les tâches prêtes |
+| `List<Tache> getTachesBloquesDansGroupe(...)` | Tâches bloquées dans un groupe |
+| `boolean detecterCycle(List<Dependance>)` | Détecter cycles (algo DFS) |
+| `boolean validerNouvelleDependance(...)` | Valider avant d'ajouter |
+| `List<Tache> calculerCheminCritique(...)` | Calcul chemin critique (CPM) |
+---
+## ✅ **Récapitulatif par nombre**
+| Catégorie | Nombre |
+|-----------|--------|
+| **Ports IN (Use Cases)** | ~100 |
+| **Ports OUT (Repositories)** | 8 |
+| **Ports OUT (Services)** | 4 |
+| **Services Domain** | 1 (avec ~10 méthodes) |
+---
+## 📊 **Organisation des fichiers**
+```
+application/
+├── port/
+│   ├── in/
+│   │   ├── agent/                    (9 Use Cases)
+│   │   ├── affectation/              (9 Use Cases)
+│   │   ├── template/                 (9 Use Cases)
+│   │   ├── template/editor/          (9 Use Cases)
+│   │   ├── processus/                (12 Use Cases)
+│   │   ├── groupetache/              (6 Use Cases)
+│   │   ├── tache/                    (14 Use Cases)
+│   │   ├── dependance/               (6 Use Cases)
+│   │   ├── notification/             (10 Use Cases)
+│   │   ├── notification/scheduled/   (5 Use Cases)
+│   │   ├── direction/                (6 Use Cases)
+│   │   └── statistics/               (10 Use Cases)
+│   │
+│   └── out/
+│       ├── agent/                    (AgentRepository)
+│       ├── affectation/              (AffectationRepository)
+│       ├── processus/                (ProcessusRepository)
+│       ├── tache/                    (TacheRepository)
+│       ├── dependance/               (DependanceRepository)
+│       ├── template/                 (TemplateProcessusRepository)
+│       ├── notification/             (NotificationRepository, NotificationService)
+│       ├── direction/                (DirectionRepository)
+│       ├── email/                    (EmailService)
+│       ├── report/                   (ReportService)
+│       └── storage/                  (StorageService)
+│
+└── service/
+    ├── agent/                        (AgentService)
+    ├── affectation/                  (AffectationService)
+    ├── processus/                    (ProcessusService)
+    ├── tache/                        (TacheService)
+    ├── template/                     (TemplateProcessusService)
+    ├── notification/                 (NotificationService)
+    └── statistics/                   (StatisticsService)
+📋 Ports IN & OUT manquants pour les Templates
+
+1️⃣ MODULE TEMPLATE TÂCHE
+Port IN : TemplateTacheUseCases
+java
+// application/port/in/template/tache/
+Use Case	Description	Méthode
+CreateTemplateTacheUseCase	Créer une tâche type	TemplateTache execute(CreateTemplateTacheCommand)
+UpdateTemplateTacheUseCase	Modifier une tâche type	TemplateTache execute(UpdateTemplateTacheCommand)
+DeleteTemplateTacheUseCase	Supprimer une tâche type	void execute(Long templateTacheId)
+GetTemplateTacheByIdUseCase	Récupérer une tâche type par ID	TemplateTache execute(Long templateTacheId)
+ListTachesByGroupeUseCase	Lister les tâches d'un groupe template	List<TemplateTache> execute(Long templateGroupeId)
+DuplicateTemplateTacheUseCase	Dupliquer une tâche type	TemplateTache execute(Long templateTacheId)
+Détail des Commands :
+java
+record CreateTemplateTacheCommand(
+    String codeTache,
+    String libelle,
+    String description,
+    TypeTache type,           // TACHE ou FORM
+    int delaiJours,           // J-5, J+0, J+7...
+    int ordre,
+    int dureeEstimeeHeures
+) {}
+record UpdateTemplateTacheCommand(
+    Long templateTacheId,
+    String libelle,
+    String description,
+    int delaiJours,
+    int ordre,
+    int dureeEstimeeHeures
+) {}
+
+Port OUT : TemplateTacheRepository
+java
+// application/port/out/template/tache/TemplateTacheRepository.java
+Description : Gestion de la persistence des templates de tâches
+Méthode	Description
+TemplateTache save(TemplateTache template)	Sauvegarder un template tâche
+Optional<TemplateTache> findById(Long id)	Trouver par ID
+List<TemplateTache> findByTemplateGroupeId(Long groupeId)	Tâches d'un groupe template
+List<TemplateTache> findAll()	Tous les templates tâches
+void delete(TemplateTache template)	Supprimer un template tâche
+boolean existsById(Long id)	Vérifier si existe
+long countByTemplateGroupeId(Long groupeId)	Compter tâches d'un groupe
+
+2️⃣ MODULE TEMPLATE GROUPE TÂCHE
+Port IN : TemplateGroupeTacheUseCases
+java
+// application/port/in/template/groupe/
+Use Case	Description	Méthode
+CreateTemplateGroupeTacheUseCase	Créer un groupe de tâches type	TemplateGroupeTache execute(CreateTemplateGroupeCommand)
+UpdateTemplateGroupeTacheUseCase	Modifier un groupe type	TemplateGroupeTache execute(UpdateTemplateGroupeCommand)
+DeleteTemplateGroupeTacheUseCase	Supprimer un groupe type	void execute(Long templateGroupeId)
+GetTemplateGroupeTacheByIdUseCase	Récupérer un groupe type par ID	TemplateGroupeTache execute(Long templateGroupeId)
+ListGroupesByTemplateProcessusUseCase	Lister groupes d'un template processus	List<TemplateGroupeTache> execute(Long templateProcessusId)
+AddTacheToTemplateGroupeUseCase	Ajouter une tâche au groupe	TemplateGroupeTache execute(AddTacheToGroupeCommand)
+RemoveTacheFromTemplateGroupeUseCase	Retirer une tâche du groupe	TemplateGroupeTache execute(RemoveTacheFromGroupeCommand)
+ReorderTachesInTemplateGroupeUseCase	Réordonner les tâches du groupe	TemplateGroupeTache execute(ReorderTachesInGroupeCommand)
+DuplicateTemplateGroupeTacheUseCase	Dupliquer un groupe type	TemplateGroupeTache execute(Long templateGroupeId)
+Détail des Commands :
+java
+record CreateTemplateGroupeCommand(
+    String codeGroupe,
+    String libelle,
+    Long directionId,           // Direction responsable du groupe
+    int ordre,
+    List<Long> templateTachesIds  // Tâches à inclure
+) {}
+record UpdateTemplateGroupeCommand(
+    Long templateGroupeId,
+    String libelle,
+    Long directionId,
+    int ordre
+) {}
+record AddTacheToGroupeCommand(
+    Long templateGroupeId,
+    Long templateTacheId
+) {}
+record RemoveTacheFromGroupeCommand(
+    Long templateGroupeId,
+    Long templateTacheId
+) {}
+record ReorderTachesInGroupeCommand(
+    Long templateGroupeId,
+    List<Long> orderedTacheIds  // Liste des IDs dans le nouvel ordre
+) {}
+
+Port OUT : TemplateGroupeTacheRepository
+java
+// application/port/out/template/groupe/TemplateGroupeTacheRepository.java
+Description : Gestion de la persistence des templates de groupes
+Méthode	Description
+TemplateGroupeTache save(TemplateGroupeTache template)	Sauvegarder un template groupe
+Optional<TemplateGroupeTache> findById(Long id)	Trouver par ID
+List<TemplateGroupeTache> findByTemplateProcessusId(Long processusId)	Groupes d'un template processus
+List<TemplateGroupeTache> findByDirectionId(Long directionId)	Groupes par direction
+List<TemplateGroupeTache> findAll()	Tous les templates groupes
+void delete(TemplateGroupeTache template)	Supprimer un template groupe
+boolean existsById(Long id)	Vérifier si existe
+long countByTemplateProcessusId(Long processusId)	Compter groupes d'un template
+
+3️⃣ MODULE TEMPLATE NOTIFICATION
+Port IN : TemplateNotificationUseCases
+java
+// application/port/in/template/notification/
+Use Case	Description	Méthode
+CreateTemplateNotificationUseCase	Créer un template de notification	TemplateNotification execute(CreateTemplateNotificationCommand)
+UpdateTemplateNotificationUseCase	Modifier un template notification	TemplateNotification execute(UpdateTemplateNotificationCommand)
+DeleteTemplateNotificationUseCase	Supprimer un template notification	void execute(Long templateNotificationId)
+GetTemplateNotificationByIdUseCase	Récupérer un template par ID	TemplateNotification execute(Long templateNotificationId)
+ListTemplatesNotificationUseCase	Lister tous les templates	List<TemplateNotification> execute()
+GetTemplatesByNiveauUseCase	Récupérer par niveau (alerte/info/rappel)	List<TemplateNotification> execute(String niveau)
+Détail des Commands :
+java
+record CreateTemplateNotificationCommand(
+    String codeNotification,
+    String objet,
+    String description,
+    String niveauGenerique,      // alerte, information, rappel
+    String typeEnvoyeur,         // tache ou groupe_tache
+    Long templateTacheId,        // Si lié à une tâche
+    Long templateGroupeId        // Si lié à un groupe
+) {}
+record UpdateTemplateNotificationCommand(
+    Long templateNotificationId,
+    String objet,
+    String description,
+    String niveauGenerique
+) {}
+
+Port OUT : TemplateNotificationRepository
+java
+// application/port/out/template/notification/TemplateNotificationRepository.java
+Description : Gestion des templates de notifications
+Méthode	Description
+TemplateNotification save(TemplateNotification template)	Sauvegarder un template notification
+Optional<TemplateNotification> findById(Long id)	Trouver par ID
+Optional<TemplateNotification> findByCode(String code)	Trouver par code
+List<TemplateNotification> findAll()	Tous les templates
+List<TemplateNotification> findByNiveau(String niveau)	Par niveau (alerte/info/rappel)
+List<TemplateNotification> findByTypeEnvoyeur(String type)	Par type envoyeur
+void delete(TemplateNotification template)	Supprimer un template
+
+4️⃣ MODULE TEMPLATE DÉPENDANCE
+Port IN : TemplateDependanceUseCases
+java
+// application/port/in/template/dependance/
+Use Case	Description	Méthode
+CreateTemplateDependanceUseCase	Créer une dépendance dans un template	TemplateDependance execute(CreateTemplateDependanceCommand)
+DeleteTemplateDependanceUseCase	Supprimer une dépendance template	void execute(Long templateDependanceId)
+GetDependancesByTemplateProcessusUseCase	Dépendances d'un template processus	List<TemplateDependance> execute(Long templateProcessusId)
+ValidateTemplateDependancesUseCase	Valider (pas de cycles)	boolean execute(Long templateProcessusId)
+Détail des Commands :
+java
+record CreateTemplateDependanceCommand(
+    TypeSource sourceType,         // TACHE ou GROUPE_TACHE
+    Long sourceId,                 // ID template tâche ou groupe
+    TypeCible cibleType,
+    Long cibleId
+) {}
+
+Port OUT : TemplateDependanceRepository
+java
+// application/port/out/template/dependance/TemplateDependanceRepository.java
+```
+**Description** : Gestion des dépendances dans les templates
+| Méthode | Description |
+|---------|-------------|
+| `TemplateDependance save(TemplateDependance dependance)` | Sauvegarder une dépendance template |
+| `Optional<TemplateDependance> findById(Long id)` | Trouver par ID |
+| `List<TemplateDependance> findByTemplateProcessusId(Long processusId)` | Dépendances d'un template |
+| `void delete(TemplateDependance dependance)` | Supprimer une dépendance |
+---
+## 📊 **Récapitulatif complet mis à jour**
+| Catégorie | Sous-catégorie | Nombre |
+|-----------|----------------|--------|
+| **Ports IN** | Agent | 9 |
+| | Affectation | 9 |
+| | Template Processus | 9 |
+| | Template Processus Editor | 9 |
+| | **Template Tâche** | **6** ✅ |
+| | **Template Groupe Tâche** | **9** ✅ |
+| | **Template Notification** | **6** ✅ |
+| | **Template Dépendance** | **4** ✅ |
+| | Processus | 12 |
+| | Groupe Tâche | 6 |
+| | Tâche | 14 |
+| | Dépendance | 6 |
+| | Notification | 10 |
+| | Notification Scheduled | 5 |
+| | Direction | 6 |
+| | Statistics | 10 |
+| **TOTAL Ports IN** | | **~130** |
+| | | |
+| **Ports OUT** | Repositories | 12 ✅ |
+| | Services externes | 4 |
+| **TOTAL Ports OUT** | | **16** |
+| | | |
+| **Services Domain** | | 1 |
+---
+## 🗂️ **Organisation complète des fichiers**
+```
+application/
+├── port/
+│   ├── in/
+│   │   ├── agent/                           (9 Use Cases)
+│   │   ├── affectation/                     (9 Use Cases)
+│   │   ├── template/
+│   │   │   ├── processus/                   (9 Use Cases)
+│   │   │   ├── processus/editor/            (9 Use Cases)
+│   │   │   ├── tache/                       (6 Use Cases) ✅
+│   │   │   ├── groupe/                      (9 Use Cases) ✅
+│   │   │   ├── notification/                (6 Use Cases) ✅
+│   │   │   └── dependance/                  (4 Use Cases) ✅
+│   │   ├── processus/                       (12 Use Cases)
+│   │   ├── groupetache/                     (6 Use Cases)
+│   │   ├── tache/                           (14 Use Cases)
+│   │   ├── dependance/                      (6 Use Cases)
+│   │   ├── notification/                    (10 Use Cases)
+│   │   ├── notification/scheduled/          (5 Use Cases)
+│   │   ├── direction/                       (6 Use Cases)
+│   │   └── statistics/                      (10 Use Cases)
+│   │
+│   └── out/
+│       ├── agent/
+│       │   └── AgentRepository
+│       ├── affectation/
+│       │   └── AffectationRepository
+│       ├── processus/
+│       │   └── ProcessusRepository
+│       ├── tache/
+│       │   └── TacheRepository
+│       ├── dependance/
+│       │   └── DependanceRepository
+│       ├── template/
+│       │   ├── processus/
+│       │   │   └── TemplateProcessusRepository
+│       │   ├── tache/
+│       │   │   └── TemplateTacheRepository        ✅
+│       │   ├── groupe/
+│       │   │   └── TemplateGroupeTacheRepository  ✅
+│       │   ├── notification/
+│       │   │   └── TemplateNotificationRepository ✅
+│       │   └── dependance/
+│       │       └── TemplateDependanceRepository   ✅
+│       ├── notification/
+│       │   ├── NotificationRepository
+│       │   └── NotificationService
+│       ├── direction/
+│       │   └── DirectionRepository
+│       ├── email/
+│       │   └── EmailService
+│       ├── report/
+│       │   └── ReportService
+│       └── storage/
+│           └── StorageService
+│
+└── service/
+    ├── agent/
+    │   └── AgentService
+    ├── affectation/
+    │   └── AffectationService
+    ├── processus/
+    │   └── ProcessusService
+    ├── tache/
+    │   └── TacheService
+    ├── template/
+    │   ├── TemplateProcessusService
+    │   ├── TemplateTacheService              ✅
+    │   ├── TemplateGroupeTacheService        ✅
+    │   ├── TemplateNotificationService       ✅
+    │   └── TemplateDependanceService         ✅
+    ├── notification/
+    │   └── NotificationService
+    └── statistics/
+        └── StatisticsService
+
+🎯 Services Application pour les Templates
+TemplateTacheService
+java
+// application/service/template/TemplateTacheService.java
+Rôle : Gérer les templates de tâches (CRUD simple)
+Implémente :
+	• CreateTemplateTacheUseCase
+	• UpdateTemplateTacheUseCase
+	• DeleteTemplateTacheUseCase
+	• GetTemplateTacheByIdUseCase
+	• ListTachesByGroupeUseCase
+	• DuplicateTemplateTacheUseCase
+Dépendances (Ports OUT) :
+	• TemplateTacheRepository
+	• TemplateGroupeTacheRepository (pour vérifier appartenance)
+
+TemplateGroupeTacheService
+java
+// application/service/template/TemplateGroupeTacheService.java
+Rôle : Gérer les templates de groupes + orchestrer les tâches du groupe
+Implémente :
+	• CreateTemplateGroupeTacheUseCase
+	• UpdateTemplateGroupeTacheUseCase
+	• DeleteTemplateGroupeTacheUseCase
+	• GetTemplateGroupeTacheByIdUseCase
+	• ListGroupesByTemplateProcessusUseCase
+	• AddTacheToTemplateGroupeUseCase
+	• RemoveTacheFromTemplateGroupeUseCase
+	• ReorderTachesInTemplateGroupeUseCase
+	• DuplicateTemplateGroupeTacheUseCase
+Dépendances (Ports OUT) :
+	• TemplateGroupeTacheRepository
+	• TemplateTacheRepository
+	• TemplateProcessusRepository (pour vérifier appartenance)
+	• DirectionRepository (pour valider la direction)
+
+TemplateNotificationService
+java
+// application/service/template/TemplateNotificationService.java
+Rôle : Gérer les templates de notifications
+Implémente :
+	• CreateTemplateNotificationUseCase
+	• UpdateTemplateNotificationUseCase
+	• DeleteTemplateNotificationUseCase
+	• GetTemplateNotificationByIdUseCase
+	• ListTemplatesNotificationUseCase
+	• GetTemplatesByNiveauUseCase
+Dépendances (Ports OUT) :
+	• TemplateNotificationRepository
+	• TemplateTacheRepository (si lié à une tâche)
+	• TemplateGroupeTacheRepository (si lié à un groupe)
+
+TemplateDependanceService
+java
+// application/service/template/TemplateDependanceService.java
+Rôle : Gérer les dépendances dans les templates + validation
+Implémente :
+	• CreateTemplateDependanceUseCase
+	• DeleteTemplateDependanceUseCase
+	• GetDependancesByTemplateProcessusUseCase
+	• ValidateTemplateDependancesUseCase
+Dépendances (Ports OUT) :
+	• TemplateDependanceRepository
+	• TemplateProcessusRepository
+	• TemplateTacheRepository
+	• TemplateGroupeTacheRepository
+Dépendances (Services Domain) :
+	• DependanceValidationService (pour détecter les cycles)
+
+✅ Conclusion
+Maintenant tu as TOUT :
+	1. ✅ Ports IN pour TemplateTache (6 Use Cases)
+	2. ✅ Ports IN pour TemplateGroupeTache (9 Use Cases)
+	3. ✅ Ports IN pour TemplateNotification (6 Use Cases)
+	4. ✅ Ports IN pour TemplateDependance (4 Use Cases)
+	5. ✅ Ports OUT pour tous les templates (4 repositories)
+	6. ✅ Services Application pour gérer tout ça
+Total mis à jour :
+	• ~130 Ports IN (Use Cases)
+	• 16 Ports OUT (12 repositories + 4 services)
+	• 1 Service Domain (DependanceValidationService)

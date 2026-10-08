@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: process_entree_sortie
+  datasource:
+    url: jdbc:postgresql://localhost:5432/projet_entre_sortie
+    username: entre_sortie_user
+    password: user
+    driver-class-name: org.postgresql.Driver
+    
+  # Configuration JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update  # create, create-drop, update, validate, none
+    show-sql: true      # Affiche les requêtes SQL dans la console
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true  # Formatte les requêtes SQL pour la lisibilité
+        jdbc:
+          use_streams_for_binary: false  # Évite l'utilisation des Large Objects (OID)
+    
+  # Configuration du serveur
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+processus:
+  agentEtat:
+    schedulerDelay: 3000 # 1 minute en millisecondes

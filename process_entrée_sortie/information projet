@@ -1,0 +1,1119 @@
+
+
+Informations sur les différents élements templates pour tester l'application:
+
+pour les directions:
+    - DSC:
+        - id : générée
+        - code_direction: direction_sc
+        - lib_direction: DSC
+        - description: Direction des Services Consultatifs
+    - DPC:
+        - id : générée
+        - code_direction: direction_pc
+        - lib_direction: DPC
+        - description: Direction de la Participation Citoyenne
+    - DICOM:
+        - id : générée
+        - code_direction: direction_com
+        - lib_direction: DICOM
+        - description: Direction de la Communication
+    - DICI:
+        - id : générée
+        - code_direction: direction_ici
+        - lib_direction: DICI
+        - description: Direction de l'Innovation et de la communication
+    - DREI:
+        - id : générée
+        - code_direction: direction_rei
+        - lib_direction: DREI
+        - description: Direction des relations européennes et internationales
+    - DRH:
+        - id : générée
+        - code_direction: direction_rh
+        - lib_direction: DRH
+        - description: Direction des ressources humaines
+    - DAF:
+        - id : générée
+        - code_direction: direction_af
+        - lib_direction: DAF
+        - description: Direction Administrative et Financière
+    - DSIUN:
+        - id : générée
+        - code_direction: direction_siun
+        - lib_direction: DSIUN
+        - description: Direction des systèmes d'information et usages numériques
+    - DAPPI:
+        - id : générée
+        - code_direction: direction_appi
+        - lib_direction: DAPPI
+        - description: Direction de l'accueil des publics et du patrimoine immbolier
+
+pour les templates processus:
+    - entrée_agent:
+        - id : générée
+        - actif: true
+        - code_processus: entrée_agent_creation
+        - lib_processus: Entrée Agent
+        - description: Processus de création d'un agent
+        - type: entree
+        - status_list: (trié par ordre)
+            - statut:
+                - id : générée
+                - code_statut: statut_entree_agent_1
+                - lib_statut: Initialisation
+                - description: étape du formulaire de création d'un agent pour remplir ses informations personnelles
+            - statut:
+                - id : générée
+                - code_statut: statut_entree_agent_2
+                - lib_statut: Formulaire des droits 
+                - description: étape du formulaire de création d'un agent pour remplir ses droits
+            - statut:
+                - id : générée
+                - code_statut: statut_entree_agent_3
+                - lib_statut: Ouverture des droits
+                - description: étape de réalisation des taches de création d'un agent
+            -statut
+                - id : générée
+                - code_statut: statut_entree_agent_4
+                - lib_statut: Processus cloturé
+                - description: étape de fin de création d'un agent
+
+        - template_groupe_tache_list:
+                - template_groupe_tache:
+                    - id : générée
+                    - code_groupe_tache:  form_agent_creation_rh
+                    - direction: DRH
+                    - isDirectionConcernee: false
+                    - statut_processus: Initialisation
+                    - template_processus: entrée_agent
+                    - template_tache_list: 
+                        - template_tache:
+                            - id : générée
+                            - code_tache: form_agent_creation_rh
+                            - lib_tache: Formulaire de création d'un agent pour RH
+                            - description: Tache de création d'un agent pour RH
+                            - type: formulaire
+                            - delai_jour: null
+                            - duree_estimee_heures: null
+                            - contenu: [
+                              champs: [{
+                                - id:"nom_agent",
+                                - type:"texte",
+                                - label:"Nom de l'agent",
+                                - description:"Nom de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 100,
+                                }
+                                },
+                                {
+                                id:"prenom_agent",
+                                type:"texte",
+                                - label:"Prenom de l'agent",
+                                - description:"Prenom de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 100,
+                                }
+                                },
+                                {
+                                - id:"email_agent",
+                                - type:"email",
+                                - label:"Email de l'agent",
+                                - description:"Email de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-zA-Z0-9._%+-]+@lecese\\.fr$",
+                                }
+                                },
+                                {
+                                id:"date_arrivee",
+                                type:"date",
+                                - label:"Date d'arrivée de l'agent",
+                                - description:"Date d'arrivée de l'agent",
+                                - required:true,
+                                - default: LocalDate.now(),
+                                - validation: {
+                                    "minDate": LocalDate.now(),
+                                }
+                                },
+                                {
+                                id:"date_depart",
+                                type:"date",
+                                - label:"Date de départ de l'agent",
+                                - description:"Date de départ de l'agent",
+                                - required:false,
+                                - default: null,
+                                - validation: {
+                                    "minDate": LocalDate.now(),
+                                }
+                                },
+                                {
+                                id:"direction",
+                                type:"select",
+                                - label:"Direction de l'agent",
+                                - description:"Direction de l'agent",
+                                - required:true,
+                                - options: {
+                                    accesBaseDonnees: "direction",
+                                    champs: ["lib_direction", "code_direction"]
+                                }
+                                },
+                                {
+                                    id:"image_agent",
+                                    type:"image",
+                                    - label:"Image de l'agent",
+                                    - description:"Image de l'agent",
+                                    - required:true,
+                                    - default: null,
+                                    - validation: {
+                                        "minSize": 100,
+                                        "maxSize": 1000000,
+                                        "mimeType": ["image/jpeg", "image/png", "image/gif", "image/webp"],
+                                    }
+                                    }
+                                },
+                                },
+                                {
+                                id:"role",
+                                - type:"select",
+                                - label:"Role de l'agent",
+                                - description:"Role de l'agent",
+                                - required:true,
+                                - options: {
+                                    accesBaseDonnees: "role",
+                                    champs: ["lib_role", "code_role"]
+                                }
+                                }]
+                                actions: [
+                                    {
+                                        type: "UPDATE_AGENT",
+                                        condition: null,
+                                        params: {
+                                            nom: "${formulaire.nom_agent}",
+                                            prenom: "${formulaire.prenom_agent}",
+                                            email: "${formulaire.email_agent}",
+                                            role: "${formulaire.role}",
+                                            etatAgent: "${templasus.typeProcessus}"
+                                        }
+                                },
+                                {
+                                    type: "UPDATE_AGENT_DIRECTION",
+                                    condition: null,
+                                    params: {
+                                        agentId: "${agent.id}",
+                                        directionId: "${formulaire.direction}",
+                                        dateArrivee: "${formulaire.date_arrivee}"
+                                    }
+                                },
+                                ]
+                        ]
+                - templategroupe_tache:
+                    - id: générée 
+                    - code_groupe_tache: agent_form_concenrnee
+                    - lib_groupe_tache: Groupe de taches de création d'un agent
+                    - description: Groupe de taches de création d'un agent
+                    - statut_processus: Formulaire des droits
+                    - isDirectionConcernee: true
+                    - template_processus: entrée_agent
+                    - template_tache_list:
+                        - template_tache:
+                            - id : générée
+                            - code_tache: form_agent_creation_concernee
+                            - lib_tache: Formulaire de création d'un agent pour la direction concernee
+                            - description: Tache de création d'un agent pour la direction concernee
+                            - type: formulaire
+                            - delai_jour: null
+                            - contenu: [
+                                champs: [{
+                                id:"fonction",
+                                - type:"texte",
+                                - label:"Fonction de l'agent",
+                                - description:"Fonction de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 300,
+                                }
+                                },
+                                {
+                                id:"Responsable",
+                                - type:"select",
+                                - label:"Responsable de l'agent",
+                                - description:"Responsable de l'agent",
+                                - required:true,
+                                - options: {
+                                    accesBaseDonnees: "agent",
+                                    champs: ["lib_agent", "code_agent"]
+                                }
+                                },
+                                {
+                                    id:"agent_acceuil",
+                                    - type:"select",
+                                    - label:"Agent chargé de l'acceuil de l'agent",
+                                    - description:"Agent chargé de l'acceuil de l'agent",
+                                    - required:false,
+                                    - options: {
+                                        accesBaseDonnees: "agent",
+                                        champs: ["lib_agent", "code_agent"]
+                                    }
+                                },
+                                {
+                                    id:"application",
+                                    - type:"input",
+                                    - label:"Application de l'agent",
+                                    - description:"Application de l'agent",
+                                    - required:true,
+                                },
+                                {
+                                    id:"diffusion",
+                                    - type:"input",
+                                    - label:"liste de diffusion de l'agent",
+                                    - description:"liste de diffusion de l'agent",
+                                    - required:true,
+                                },
+                                {
+                                    id:"matériel",
+                                    - type:"input",
+                                    - label:"Matériel de l'agent",
+                                    - description:"Matériel de l'agent",
+                                    - required:true,
+                                }],
+                                actions: [ {
+                                    type: "UPDATE_AGENT_AFFECTATION",
+                                    condition: null,
+                                    params: {
+                                        agentId: "${agent.id}",
+                                        directionId: "${agentDirection.directionId}",
+                                        fonction: "${formulaire.fonction}"
+                                    }
+                                },
+                                {
+                                    type: "UPDATE_AGENT_MATERIEL",
+                                    condition: null,
+                                    params: {
+                                        agentId: "${agent.id}",
+                                        materielData: "${formulaire.materiel}"
+                                    }
+                                },
+                                
+                                    ]
+                            ]
+            - template_groupe_tache:
+                    - id : générée
+                    - code_groupe_tache: virtualia_organigramme_creation
+                    - lib_groupe_tache: Virtualia et Organigramme
+                    - description: Groupe de taches de création d'un agent pour Virtualia et Organigramme
+                    - statut_processus: Ouverture des droits
+                    - template_processus: entrée_agent
+                    - isDirectionConcernee: false
+                    - template_tache_list:
+                        - template_tache:
+                            - id : générée
+                            - code_tache: virtualia_creation
+                            - lib_tache: créer un compte virtualia
+                            - description: Créer un compte virtualia pour l'agent
+                            - type: tache
+                            - delai_jour: 7
+                            - contenu: null
+
+                        - template_tache:
+                            - id : générée
+                            - code_tache: organigramme_ajout
+                            - lib_tache: Ajouter dans l'organigramme
+                            - description: Ajouter l'agent dans l'organigramme
+                            - type: tache
+                            - delai_jour: 7
+                            - contenu: null
+
+        - template_groupe_tache:
+                    - id : générée
+                    - code_groupe_tache: badge_creation
+                    - lib_groupe_tache: Création du badge
+                    - description: Création du badge de l'agent
+                    - statut_processus: Ouverture des droits et matériels
+                    - template_processus: entrée_agent
+                    - direction: DAPPI
+                    - isDirectionConcernee: false
+                    - template_tache_list:
+                        - template_tache:
+                            - id : générée
+                            - code_tache: badge_creation
+                            - lib_tache: Création du badge
+                            - description: Création du badge de l'agent
+                            - type: tache
+                            - delai_jour: 7
+                            - contenu: null
+        - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: cantine_droits
+                - lib_groupe_tache: Droits de la cantine
+                - description: Attribuer les droits à la cantine
+                - statut_processus: Ouverture des droits et matériels
+                - template_processus: entrée_agent
+                - direction: DAF
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: cantine_droits_creation
+                        - lib_tache: Droits de la cantine
+                        - description: Attribuer les droits à la cantine
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: null
+        
+        - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: employe_paye
+                - lib_groupe_tache: Rémunération de l'employé
+                - description: Traitement de la paye de l'employé
+                - statut_processus: Ouverture des droits et matériels
+                - template_processus: entrée_agent
+                - direction: DAF
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: paye_creation
+                        - lib_tache: Création du badge
+                        - description: Création du badge de l'agent
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: null
+        - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: adresse_mail_creation
+                - lib_groupe_tache: Création de l'adresse mail
+                - description: Création de l'adresse mail de l'agent
+                - statut_processus: Ouverture des droits et matériels
+                - template_processus: entrée_agent
+                - direction: DSIUN
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: adresse_mail_creation
+                        - lib_tache: Création de l'adresse mail
+                        - description: Création de l'adresse mail de l'agent
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: {
+                            champs: [
+                                {
+                                    id: "adresse_mail",
+                                    type: "value",
+                                    libelle:"Adresse mail à créer",
+                                    value: "${agent.email}",
+                                    baseDonnees: "agent",
+                                    champs: ["email"],
+                                }
+                            ]
+                        }
+                    - template_tache:
+                        - id : générée
+                        - code_tache: droit_agent_creation
+                        - lib_tache: Droits de l'agent
+                        - description: Attribuer les droits à l'agent
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: {
+                            champs: [
+                                {
+                                    id: "droit_agent",
+                                    type: "value",
+                                    libelle:"Droits à donner à l'agent",
+                                    value: "${agentDirection.materielEtDroit.droitAgent}",
+                                    baseDonnees: "agentDirection",
+                                    champs: ["materielEtDroit"],
+
+                                }
+                            ]
+                        }
+         - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: materiel_agent_creation
+                - lib_groupe_tache: Matériel de l'agent
+                - description: Donner le matériel à l'agent
+                - statut_processus: Ouverture des droits et matériels
+                - template_processus: entrée_agent
+                - direction: DSIUN
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: materiel_agent_creation
+                        - lib_tache: Matériel de l'agent
+                        - description: Donner le matériel à l'agent
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: {
+                            champs: [
+                                {
+                                    id: "droit_agent",
+                                    type: "etat_changement",
+                                    libelle:"Droits à donner à l'agent",
+                                    value: "${agentDirection.materielEtDroit.materielAgent}",
+                                    baseDonnees: "agentMaterielEtDroit",
+                                    champs: ["materielAgent"],
+                                    etat: ["en_cours", "en_possession"],
+                                }
+                            ]
+                         actions: [{
+                            type: "Update_AGENT_MATERIEL",
+                            condition: null,
+                            params: {
+                                agentId: "${agent.id}",
+                                etat: "formulaire.etat"
+                            }
+                         }]
+                        }
+        - template_dependance_list:
+            - template_dependance:
+                - id : générée
+                - source: virtualia_creation
+                - cible: organigramme_ajout, badge_creation
+            - template_dependance:
+                - id : générée
+                - source: form_agent_creation_rh
+                - cible: form_agent_creation_concernee
+            - template_dependance:
+                - id : générée
+                - source: form_agent_creation_concernee
+                - cible: virtualia_creation
+            - template_dependance:
+                - id : générée
+                - source: form_agent_creation_concernee
+                - cible: paye_creation
+            - template_dependance:
+                - id : générée
+                - source: badge_creation
+                - cible: cantine_droits_creation
+            - template_dependance:
+                - id : générée
+                - source: form_agent_creation_concernee
+                - cible: adresse_mail_creation
+            - template_dependance:
+                - id : générée
+                - source: adresse_mail_creation
+                - cible: droit_agent_creation
+            - template_dependance:
+                - id : générée
+                - source: form_agent_creation_concernee
+                - cible: materiel_agent_creation
+
+
+
+    - sortie_agent:
+        - id : générée
+        - actif: true
+        - code_processus: sortie_agent_creation
+        - lib_processus: Sortie Agent
+        - description: Processus de sortie d'un agent
+        - type: sortie
+        - status_list: (trié par ordre)
+            - statut:
+                - id : générée
+                - code_statut: statut_sortie_agent_1
+                - lib_statut: Initialisation/Formulaire des droits
+                - description: étape du formulaire de sortie d'un agent pour remplir ses informations personnelles
+            - statut:
+                - id : générée
+                - code_statut: statut_sortie_agent_2
+                - lib_statut: Formulaire des accès
+                - description: étape du formulaire de sortie d'un agent pour remplir ses accès
+            - statut:
+                - id : générée
+                - code_statut: statut_sortie_agent_3
+                - lib_statut: Retrait des droits
+                - description: étape de réalisation des taches de retrait des droits d'un agent
+            -statut
+                - id : générée
+                - code_statut: statut_sortie_agent_4
+                - lib_statut: Processus cloturé
+                - description: étape de fin de sortie d'un agent
+
+        - template_groupe_tache_list:
+                - template_groupe_tache:
+                    - id : générée
+                    - code_groupe_tache:  form_agent_sortie_rh
+                    - direction: DRH
+                    - isDirectionConcernee: false
+                    - statut_processus: Initialisation/Formulaire des droits
+                    - template_processus: sortie_agent
+                    - template_tache_list: 
+                        - template_tache:
+                            - id : générée
+                            - code_tache: form_agent_sortie_rh
+                            - lib_tache: Formulaire de sortie d'un agent pour RH
+                            - description: Tache de sortie d'un agent pour RH
+                            - type: formulaire
+                            - delai_jour: null
+                            - duree_estimee_heures: null
+                            - contenu: [
+                              champs: [
+                                {
+                                    id:"image_agent",
+                                    type:"image",
+                                    - label:"Image de l'agent",
+                                    - description:"Image de l'agent",
+                                    - required:false,
+                                    - default: false,
+                                    - validation: {
+                                        "minSize": 100,
+                                        "maxSize": 1000000,
+                                        "mimeType": ["image/jpeg", "image/png", "image/gif", "image/webp"],
+                                    }
+                                    }
+                                },
+                                
+                                {
+                                - id:"nom_agent",
+                                - type:"texte",
+                                - label:"Nom de l'agent",
+                                - description:"Nom de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 100,
+                                }
+                                - alreadyExist: {
+                                    - type: "agent",
+                                    - champs: ["nom"],
+                                    - baseDonnees: "agent",
+                                },
+                                {
+                                id:"prenom_agent",
+                                type:"texte",
+                                - label:"Prenom de l'agent",
+                                - description:"Prenom de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 100,
+                                }
+                                - alreadyExist: {
+                                    - type: "agent",
+                                    - champs: ["prenom"],
+                                    - baseDonnees: "agent",
+                                },
+                                },
+                                {
+                                - id:"email_agent",
+                                - type:"email",
+                                - label:"Email de l'agent",
+                                - description:"Email de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-zA-Z0-9._%+-]+@lecese\\.fr$",
+                                }
+                                - alreadyExist: {
+                                    - type: "agent",
+                                    - champs: ["email"],
+                                    - baseDonnees: "agent",
+                                },
+                                },
+                                {
+                                id:"date_arrivee",
+                                type:"date",
+                                - label:"Date d'arrivée de l'agent",
+                                - description:"Date d'arrivée de l'agent",
+                                - required:true,
+                                - default: LocalDate.now(),
+                                - validation: {
+                                    "maxDate": LocalDate.now(),
+                                }
+                                - alreadyExist: {
+                                    - type: "agent",
+                                    - champs: ["date_arrivee"],
+                                    - baseDonnees: "agent",
+                                },
+                                },
+                                {
+                                id:"date_depart",
+                                type:"date",
+                                - label:"Date de départ de l'agent",
+                                - description:"Date de départ de l'agent",
+                                - required:true,
+                                - default: null,
+                                - validation: {
+                                    "minDate": LocalDate.now(),
+                                }
+                                - alreadyExist: {
+                                    - type: "agent",
+                                    - champs: ["date_depart"],
+                                    - baseDonnees: "agent",
+                                },
+                                },
+                                {
+                                id:"direction",
+                                type:"select",
+                                - label:"Direction de l'agent",
+                                - description:"Direction de l'agent",
+                                - required:true,
+                                - options: {
+                                    accesBaseDonnees: "direction",
+                                    champs: ["lib_direction", "code_direction"]
+                                }
+                                - alreadyExist: {
+                                    - type: "direction",
+                                    - champs: ["direction"],
+                                    - baseDonnees: "agent",
+                                },
+                                },
+                                {
+                                id:"role",
+                                - type:"select",
+                                - label:"Role de l'agent",
+                                - description:"Role de l'agent",
+                                - required: true,
+                                - options: {
+                                    accesBaseDonnees: "role",
+                                    champs: ["lib_role", "code_role"]
+                                }
+                                - alreadyExist: {
+                                    - type: "role",
+                                    - champs: ["role"],
+                                    - baseDonnees: "agent",
+                                },
+                                }]
+                                actions: [
+                                    {
+                                        type: "UPDATE_AGENT",
+                                        condition: null,
+                                        params: {
+                                            nom: "${formulaire.nom_agent}",
+                                            prenom: "${formulaire.prenom_agent}",
+                                            email: "${formulaire.email_agent}",
+                                            role: "${formulaire.role}",
+                                            etatAgent: "${templasus.typeProcessus}"
+                                        }
+                                },
+                                ]
+                        ]
+                - templategroupe_tache:
+                    - id: générée 
+                    - code_groupe_tache: agent_form_sortie_concernee
+                    - lib_groupe_tache: Groupe de taches de sortie d'un agent
+                    - description: Groupe de taches de sortie d'un agent
+                    - statut_processus: Formulaire des accès
+                    - template_processus: sortie_agent
+                    - isDirectionConcernee: true
+                    - template_tache_list:
+                        - template_tache:
+                            - id : générée
+                            - code_tache: form_agent_sortie_concernee
+                            - lib_tache: Formulaire de sortie d'un agent pour la direction concernee
+                            - description: Tache de sortie d'un agent pour la direction concernee
+                            - type: formulaire
+                            - delai_jour: null
+                            - contenu: [
+                                champs: [{
+                                id:"fonction",
+                                - type:"texte",
+                                - label:"Fonction de l'agent",
+                                - description:"Fonction de l'agent",
+                                - required:true,
+                                - validation: {
+                                    "minLenght":1,
+                                    "maxLength": 300,
+                                }
+                                - alreadyExist: {
+                                    - type: "affectation",
+                                    - champs: ["fonction"],
+                                    - baseDonnees: "affectation",
+                                },
+                                },
+                                {
+                                id:"Responsable",
+                                - type:"select",
+                                - label:"Responsable de l'agent",
+                                - description:"Responsable de l'agent",
+                                - required:false,
+                                - options: {
+                                    accesBaseDonnees: "agent",
+                                    champs: ["lib_agent", "code_agent"]
+                                }
+                                - alreadyExist: {
+                                    - type: "affectation",
+                                    - champs: ["responsable_id"],
+                                    - baseDonnees: "affectation",
+                                },
+                                },
+                                {
+                                    id:"agent_acceuil",
+                                    - type:"select",
+                                    - label:"Agent chargé de l'acceuil de l'agent",
+                                    - description:"Agent chargé de l'acceuil de l'agent",
+                                    - required:false,
+                                    - options: {
+                                        accesBaseDonnees: "agent",
+                                        champs: ["lib_agent", "code_agent"]
+                                    }
+                                    - alreadyExist: {
+                                        - type: "affectation",
+                                        - champs: ["agent_acceuil_id"],
+                                        - baseDonnees: "affectation",
+                                    },
+                                },
+                                {
+                                    id:"application",
+                                    - type:"input",
+                                    - label:"Application de l'agent",
+                                    - description:"Application de l'agent",
+                                    - required:true,
+                                    - validation: {
+                                        "minLenght":1,
+                                        "maxLength": 300,
+                                    }
+                                    - alreadyExist: {
+                                        - contenu: ["materiel"]
+                                        - type: "agent_droit_materiel",
+                                        - champs: ["droit_materiel"],
+                                        - baseDonnees: "agent_droit_materiel",
+                                    },
+                                },
+                                {
+                                    id:"diffusion",
+                                    - type:"input",
+                                    - label:"liste de diffusion de l'agent",
+                                    - description:"liste de diffusion de l'agent",
+                                    - required:true,
+                                    - alreadyExist: {
+                                        - type: "agent_diffusion",
+                                        - champs: ["diffusion"],
+                                        - baseDonnees: "agent_diffusion",
+                                    },
+                                },
+                                {
+                                    id:"matériel",
+                                    - type:"input",
+                                    - label:"Matériel de l'agent",
+                                    - description:"Matériel de l'agent",
+                                    - required:true,
+                                    - alreadyExist: {
+                                        - contenu: ["materiel"]
+                                        - type: "agent_droit_materiel",
+                                        - champs: ["droit_materiel"],
+                                        - baseDonnees: "agent_droit_materiel",
+                                    },
+                                }],
+                                actions: [ {
+                                    type: "UPDATE_AGENT_AFFECTATION",
+                                    condition: null,
+                                    params: {
+                                        agentId: "${agent.id}",
+                                        directionId: "${agentDirection.directionId}",
+                                        fonction: "${formulaire.fonction}"
+                                    }
+                                },
+                                {
+                                    type: "UPDATE_AGENT_MATERIEL",
+                                    condition: null,
+                                    params: {
+                                        agentId: "${agent.id}",
+                                        materielData: "${formulaire.materiel}"
+                                        droitMaterielData: "${formulaire.droit_materiel}"
+                                    }
+                                },
+                                
+                                    ]
+                            ]
+            - template_groupe_tache:
+                    - id : générée
+                    - code_groupe_tache: virtualia_organigramme_sortie
+                    - lib_groupe_tache: Virtualia et Organigramme
+                    - description: Groupe de taches de sortie d'un agent pour Virtualia et Organigramme
+                    - statut_processus: Retrait des droits
+                    - template_processus: sortie_agent
+                    - isDirectionConcernee: false
+                    - direction: DRH
+                    - template_tache_list:
+                        - template_tache:
+                            - id : générée
+                            - code_tache: virtualia_sortie
+                            - lib_tache: Cloturer le compte virtualia
+                            - description: Cloturer le compte virtualia pour l'agent
+                            - type: tache
+                            - delai_jour: 7
+                            - contenu: null
+
+                        - template_tache:
+                            - id : générée
+                            - code_tache: organigramme_sortie
+                            - lib_tache: Retirer de l'organigramme
+                            - description: Retirer l'agent de l'organigramme
+                            - type: tache
+                            - delai_jour: 7
+                            - contenu: null
+
+        - template_groupe_tache:
+                    - id : générée
+                    - code_groupe_tache: requea_sortie
+                    - lib_groupe_tache: Requea
+                    - description: Suppression du compte Requea
+                    - statut_processus: Retrait des droits
+                    - template_processus: sortie_agent
+                    - direction: DAPPI
+                    - isDirectionConcernee: false
+                    - template_tache_list:
+                        - template_tache:
+                            - id : générée
+                            - code_tache: requea_sortie
+                            - lib_tache: Suppression du compte Requea
+                            - description: Suppression du compte Requea de l'agent
+                            - type: tache
+                            - delai_jour: 7
+                            - contenu: null
+        - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: cantine_droits
+                - lib_groupe_tache: Rendu Materiel
+                - description: Attribuer les droits à la cantine
+                - statut_processus: Ouverture des droits et matériels
+                - template_processus: entrée_agent
+                - direction: DAF
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: cantine_droits_creation
+                        - lib_tache: Droits de la cantine
+                        - description: Attribuer les droits à la cantine
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: null
+        
+        - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: employe_paye
+                - lib_groupe_tache: Rémunération de l'employé
+                - description: Traitement de la paye de l'employé
+                - statut_processus: Ouverture des droits et matériels
+                - template_processus: entrée_agent
+                - direction: DAF
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: paye_creation
+                        - lib_tache: Création du badge
+                        - description: Création du badge de l'agent
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: null
+        - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: adresse_mail_sortie
+                - lib_groupe_tache: Droits et Adresse mail
+                - description: Retrait des droits et adresse mail de l'agent
+                - statut_processus: Retrait des droits
+                - template_processus: sortie_agent
+                - direction: DSIUN
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: droit_agent_sortie
+                        - lib_tache: Retrait des droits de l'agent
+                        - description: Retrait des droits de l'agent
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: {
+                            champs: [
+                                {
+                                    id: "droit_agent",
+                                    type: "value",
+                                    libelle:"Droits à retirer à l'agent",
+                                    value: "${agentDirection.materielEtDroit.droitAgent}",
+                                    baseDonnees: "agentDirection",
+                                    champs: ["materielEtDroit"],
+
+                                }
+                                {
+                                    id: "diffusion_agent",
+                                    type: "value",
+                                    libelle:"Liste de diffusion à retirer à l'agent",
+                                    value: "${agent_diffusion.diffusion}",
+                                    baseDonnees: "agent_diffusion",
+                                    champs: ["diffusion"],
+                                }
+                            ]
+                            
+                        }
+                    - template_tache:
+                        - id : générée
+                        - code_tache: adresse_mail_sortie
+                        - lib_tache: Suppression de l'adresse mail
+                        - description: Suppression de l'adresse mail de l'agent
+                        - type: tache
+                        - delai_jour: 84 
+                        - contenu: {
+                            champs: [
+                                {
+                                    id: "adresse_mail",
+                                    type: "value",
+                                    libelle:"Adresse mail à supprimer",
+                                    value: "${agent.email}",
+                                    baseDonnees: "agent",
+                                    champs: ["email"],
+                                }
+                            ]
+                        }
+         - template_groupe_tache:
+                - id : générée
+                - code_groupe_tache: materiel_agent_sortie
+                - lib_groupe_tache: Matériel de l'agent
+                - description: Retourner le matériel à l'agent
+                - statut_processus: Retrait des droits
+                - template_processus: sortie_agent
+                - direction: DSIUN
+                - isDirectionConcernee: false
+                - template_tache_list:
+                    - template_tache:
+                        - id : générée
+                        - code_tache: materiel_agent_sortie
+                        - lib_tache: Matériel de l'agent
+                        - description: Retourner le matériel à l'agent
+                        - type: tache
+                        - delai_jour: 7
+                        - contenu: {
+                            champs: [
+                                {
+                                    id: "droit_agent",
+                                    type: "etat_changement",
+                                    libelle:"Droits à donner à l'agent",
+                                    value: "${agentDirection.materielEtDroit.materielAgent}",
+                                    baseDonnees: "agentMaterielEtDroit",
+                                    champs: ["materielAgent"],
+                                    etat: ["en_possesion", "rendu","non_rendu"],
+                                }
+                            ]
+                         actions: [{
+                            type: "Update_AGENT_MATERIEL",
+                            condition: null,
+                            params: {
+                                agentId: "${agent.id}",
+                                etat: "formulaire.etat"
+                            }
+                         }]
+                        }
+        - template_dependance_list:
+            - template_dependance:
+                - id : générée
+                - source: form_agent_sortie_rh
+                - cible: form_agent_sortie_concernee
+            - template_dependance:
+                - id : générée
+                - source: form_agent_sortie_concernee
+                - cible: virtualia_sortie, materiel_agent_sortie, droit_agent_sortie, requea_sortie
+            - template_dependance:
+                - id : générée
+                - source: virtualia_sortie
+                - cible: organigramme_sortie
+            - template_dependance:
+                - id : générée
+                - source: droit_agent_sortie
+                - cible: adresse_mail_sortie
+détail sur les notifications:
+    une notification s'envoie une fois qu'une tache ayant une dépendance à un groupe a pour statut fait, à toute les directions qui ont des taches à faire après le changement d'un statut de processus,et quand une direction à finie de faire toute ses taches on envoie une notification à tout les agents de la direction qui ont des taches à faire. 
+    dans ce cas je me dis que pas besoin de réaliser un template de notification pour chaque tache, mais plutot faire des notifications sans un template, ça nous éviteras de devoir faire tout les templates de notification pour chaque tache. surtout qu'il y en a pas de notification
+
+
+
+détail d'agent à faire:
+    - agent_1:
+        - id: générée
+        - nom: John
+        - prenom: Doe
+        - email: john.doe@lecese.com
+        - code_agent: agent_1
+        - role: Admin
+        - agent_directions:
+            - id: 1
+            - code_agent_direction: agent_direction_1
+            - code_agent: agent_1
+            - code_direction: direction_rh
+            - direction: DRH
+            - date_arrivee: 2021-01-01
+            - date_depart: null
+            - agent_personnel_id: id de John Doe
+        - agent_affectations:
+            - id: générée
+            - code_agent_affectation: agent_affectation_1
+            - fonction: Directeur
+            - etat_agent: actif
+            - agent_responsable_id: null
+            - agent_acceuil_id: null    
+            - direction_id: id de la direction DRH
+            - agent_id: id de John Doe
+    - agent_2:
+        - id: générée
+        - nom: Jane
+        - prenom: Doe
+        - email: jane.doe@lecese.com
+        - code_agent: agent_2
+        - role: Admin
+        - agent_directions:
+            - id: générée
+            - code_agent_direction: agent_direction_2
+            - code_agent: DAPPI
+            - code_direction: direction_appi
+        - agent_affectations:
+            - id: générée
+            - code_agent_affectation: agent_affectation_2
+            - fonction: Agent
+            - etat_agent: actif
+            - agent_responsable_id: null
+            - agent_acceuil_id: null
+            - direction_id: id de la direction DAPPI
+            - agent_id: id de Jane Doe
+    - agent_3:
+        - id: générée
+        - nom: Matt
+        - prenom: Smith
+        - email: matt.smith@lecese.com
+        - code_agent: agent_3
+        - role: Admin
+        - agent_directions:
+            - id: générée
+            - code_agent_direction: agent_direction_3
+            - code_agent: DSIUN
+            - code_direction: direction_siun
+        - agent_affectations:
+            - id: générée
+            - code_agent_affectation: agent_affectation_3
+            - fonction: Responsable
+            - etat_agent: actif
+            - agent_responsable_id: null
+            - agent_acceuil_id: null
+            - direction_id: id de la direction DSIUN
+            - agent_id: id de Matt Smith
+    - agent_4:
+        - id: générée
+        - nom: Pierre
+        - prenom: Simon
+        - email: pierre.simon@lecese.com
+        - code_agent: agent_4
+        - role: Admin
+        - agent_directions:
+            - id: générée
+            - code_agent_direction: agent_direction_4
+            - code_agent: DAF
+            - code_direction: direction_af
+        - agent_affectations:
+            - id: générée
+            - code_agent_affectation: agent_affectation_4
+            - fonction: Responsable
+            - etat_agent: actif
+            - agent_responsable_id: null
+            - agent_acceuil_id: null
+            - direction_id: id de la direction DAF
+            - agent_id: id de Pierre Simon
