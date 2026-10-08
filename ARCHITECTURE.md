@@ -260,7 +260,7 @@ Principales entités :
 ## Environnements
 
 ### Développement (local)
-- Frontend : `http://localhost:5173` (Vite dev server)
+- Frontend : `http://localhost:5174` (Vite dev server)
 - Backend : `http://localhost:8080` (Spring Boot)
 - Base de données : localhost:5432 (PostgreSQL)
 
