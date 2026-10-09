@@ -1,11 +1,11 @@
-import type {Process} from "./Column"
+import type { Process } from "./Column"
 import { getColumns } from "./Column"
 import { BarreRecherche } from "@/components/recherche/Recherche"
 import { AjouterAgentButton, AjouterListAgentButton, AjouterPrestataireButton, AjouterConseillerButton } from "@/components/NavBar/AjouterAgent"
 // import { Card, CardContent } from "@/components/ui/card"
 import { DataTableProcess } from "../dataTableProcess"
 import { UserPlus, UserMinus, ArrowLeftRight, Users } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 
@@ -13,29 +13,30 @@ interface TableauProcessProps {
     data: Process[];
     search: string;
     onSearchChange: (value: string) => void;
+    fixedType?: Process["type"];
 }
 
 // Fonction de filtrage avec recherche et filtre par type
 function filterProcesses(data: Process[], search: string, selectedType: string | null): Process[] {
     let filtered = data;
-    
+
     // Filtre par type
     if (selectedType && selectedType !== 'all') {
         filtered = filtered.filter(process => process.type === selectedType);
     }
-    
+
     // Filtre par recherche
     if (!search) return filtered;
-    
+
     const searchValue = search.toLowerCase().trim();
-    
+
     const searchInObject = (obj: any): boolean => {
         if (obj === null || obj === undefined) return false;
-        
+
         if (typeof obj === 'string') {
             return obj.toLowerCase().includes(searchValue);
         }
-        
+
         if (typeof obj === 'object') {
             return Object.values(obj).some(value => {
                 if (typeof value === 'string') {
@@ -47,18 +48,22 @@ function filterProcesses(data: Process[], search: string, selectedType: string |
                 return false;
             });
         }
-        
+
         return String(obj).toLowerCase().includes(searchValue);
     };
-    
+
     return filtered.filter(row => {
         return Object.values(row).some(value => searchInObject(value));
     });
 }
 
-const TableauProcess = ({ data, search, onSearchChange }: TableauProcessProps) => {
+const TableauProcess = ({ data, search, onSearchChange, fixedType }: TableauProcessProps) => {
     const navigate = useNavigate();
-    const [selectedType, setSelectedType] = useState<string | null>('all');
+    const [selectedType, setSelectedType] = useState<string | null>(fixedType ?? "all");
+
+    useEffect(() => {
+        setSelectedType(fixedType ?? "all");
+    }, [fixedType]);
 
     const dateHeaderLabel = useMemo(() => {
         if (selectedType === 'sortie') {
@@ -95,7 +100,7 @@ const TableauProcess = ({ data, search, onSearchChange }: TableauProcessProps) =
             <div className="mb-8 px-4 py-2 bg-secondary rounded-md shrink-0">
                 <span className="font-semibold text-white">Liste des processus</span>
             </div>
-            
+
             {/* Cartes de catégories - Commentées */}
             {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
                 <Card 
@@ -182,63 +187,67 @@ const TableauProcess = ({ data, search, onSearchChange }: TableauProcessProps) =
                     </CardContent>
                 </Card>
             </div> */}
-            
+
             {/* Filtres de catégories - Version boutons */}
-            <div className="flex flex-wrap items-center gap-2 mb-4 shrink-0">
-                <Button
-                    variant={selectedType === 'all' ? 'default' : 'outline'}
-                    onClick={() => setSelectedType('all')}
-                    className="flex items-center gap-2 h-10 px-4"
-                >
-                    <Users className="w-4 h-4 shrink-0" />
-                    Tous ({counts.all})
-                </Button>
-                <Button
-                    variant={selectedType === 'entree' ? 'default' : 'outline'}
-                    onClick={() => setSelectedType('entree')}
-                    className="flex items-center gap-2 h-10 px-4"
-                >
-                    <div className="w-4 h-4 shrink-0 rounded bg-green-500 flex items-center justify-center">
-                        <UserPlus className="w-3 h-3 text-white" />
-                    </div>
-                    Entrée ({counts.entree})
-                </Button>
-                <Button
-                    variant={selectedType === 'sortie' ? 'default' : 'outline'}
-                    onClick={() => setSelectedType('sortie')}
-                    className="flex items-center gap-2 h-10 px-4"
-                >
-                    <div className="w-4 h-4 shrink-0 rounded bg-red-500 flex items-center justify-center">
-                        <UserMinus className="w-3 h-3 text-white" />
-                    </div>
-                    Sortie ({counts.sortie})
-                </Button>
-                <Button
-                    variant={selectedType === 'mobilite_interne' ? 'default' : 'outline'}
-                    onClick={() => setSelectedType('mobilite_interne')}
-                    className="flex items-center gap-2 h-10 px-4"
-                >
-                    <div className="w-4 h-4 shrink-0 rounded bg-amber-500 flex items-center justify-center">
-                        <ArrowLeftRight className="w-3 h-3 text-white" />
-                    </div>
-                    Mobilité Interne ({counts.mobilite_interne})
-                </Button>
-            </div>
-            
+            {!fixedType && (
+
+                <div className="flex flex-wrap items-center gap-2 mb-4 shrink-0">
+                    <Button
+                        variant={selectedType === 'all' ? 'default' : 'outline'}
+                        onClick={() => setSelectedType('all')}
+                        className="flex items-center gap-2 h-10 px-4"
+                    >
+                        <Users className="w-4 h-4 shrink-0" />
+                        Tous ({counts.all})
+                    </Button>
+                    <Button
+                        variant={selectedType === 'entree' ? 'default' : 'outline'}
+                        onClick={() => setSelectedType('entree')}
+                        className="flex items-center gap-2 h-10 px-4"
+                    >
+                        <div className="w-4 h-4 shrink-0 rounded bg-green-500 flex items-center justify-center">
+                            <UserPlus className="w-3 h-3 text-white" />
+                        </div>
+                        Entrée ({counts.entree})
+                    </Button>
+                    <Button
+                        variant={selectedType === 'sortie' ? 'default' : 'outline'}
+                        onClick={() => setSelectedType('sortie')}
+                        className="flex items-center gap-2 h-10 px-4"
+                    >
+                        <div className="w-4 h-4 shrink-0 rounded bg-red-500 flex items-center justify-center">
+                            <UserMinus className="w-3 h-3 text-white" />
+                        </div>
+                        Sortie ({counts.sortie})
+                    </Button>
+                    <Button
+                        variant={selectedType === 'mobilite_interne' ? 'default' : 'outline'}
+                        onClick={() => setSelectedType('mobilite_interne')}
+                        className="flex items-center gap-2 h-10 px-4"
+                    >
+                        <div className="w-4 h-4 shrink-0 rounded bg-amber-500 flex items-center justify-center">
+                            <ArrowLeftRight className="w-3 h-3 text-white" />
+                        </div>
+                        Mobilité Interne ({counts.mobilite_interne})
+                    </Button>
+                </div>
+
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 mb-3 shrink-0">
-                <BarreRecherche value={search} onChange={onSearchChange}/> 
+                <BarreRecherche value={search} onChange={onSearchChange} />
                 <div className="flex justify-end gap-2">
-                    <AjouterAgentButton/>
-                    <AjouterPrestataireButton/>
-                    <AjouterConseillerButton/>
+                    <AjouterAgentButton />
+                    <AjouterPrestataireButton />
+                    <AjouterConseillerButton />
                 </div>
             </div>
-            
+
             {/* DataTable */}
             <div className="flex-1 min-h-0 flex flex-col">
-                <DataTableProcess 
-                    columns={columns} 
-                    data={filteredData} 
+                <DataTableProcess
+                    columns={columns}
+                    data={filteredData}
                     searchs={search}
                     onRowClick={handleRowClick}
                 />

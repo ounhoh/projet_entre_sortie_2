@@ -14,9 +14,10 @@ import {
 interface ProcessStatusStepperProps {
     statuts: StatutProcessusDTO[];
     currentStatut?: string | null; // id, code ou libelle du statut actuel
+    isComplete?: boolean;
 }
 
-export function ProcessStatusStepper({ statuts, currentStatut }: ProcessStatusStepperProps) {
+export function ProcessStatusStepper({ statuts, currentStatut, isComplete = false }: ProcessStatusStepperProps) {
     if (!statuts || statuts.length === 0) {
         return null;
     }
@@ -37,7 +38,8 @@ export function ProcessStatusStepper({ statuts, currentStatut }: ProcessStatusSt
         return index >= 0 ? index : 0; // Si non trouvé, utiliser le premier
     };
 
-    const currentIndex = findCurrentStatutIndex();
+    // When all process tasks are done, mark every step—including the final one—as completed.
+    const currentIndex = isComplete ? statuts.length : findCurrentStatutIndex();
 
     return (
         <Breadcrumb className="w-full py-4">

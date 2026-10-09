@@ -10,6 +10,8 @@ import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
 import ProcessusDetailPage from "./components/contenuPage/processus/contenu_process/ProcessusDetailPage";
 import AgentDetailPage from "./components/contenuPage/agent/AgentDetailPage";
 import { ProcessusEditorPage } from "./components/contenuPage/processus/ProcessusEditor";
+import ProcessusActifsPage from "./components/contenuPage/processus/ProcessusActifsPage";
+
 type SidebarProps = { open: boolean; 
     setOpen: React.Dispatch<React.SetStateAction<boolean>>; };
 
@@ -138,3 +140,19 @@ export  function ProcessusEditor({open , setOpen} : SidebarProps)
     )
 }
 
+export function ProcessusActifsPageComponent({ open, setOpen }: SidebarProps) {
+    return (
+        <SidebarProvider open={open} onOpenChange={setOpen}>
+            <AppSideBar />
+            <SidebarInset className="flex flex-col min-h-0">
+                <SiteHeader
+                    titrePage="Processus en cours"
+                    description="Sélectionne un processus pour consulter ses tâches"
+                />
+                <div className="flex-1 min-h-0 overflow-auto">
+                    <ProcessusActifsPage />
+                </div>
+            </SidebarInset>
+        </SidebarProvider>
+    );
+}

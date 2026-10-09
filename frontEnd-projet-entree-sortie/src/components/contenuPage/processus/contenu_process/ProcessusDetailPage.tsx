@@ -86,6 +86,8 @@ export default function ProcessusDetailPage() {
   }
 
   const statutActuelId = details.processInfo.statut.id;
+  const taches = (details.groupeTacheList || []).flatMap((groupe) => groupe.taches || []);
+  const processusTermine = taches.length > 0 && taches.every((tache) => tache.statut === "fait");
   const statutsSansArchive = template?.statutProcessusDTOList
     ? template.statutProcessusDTOList.filter((statut: { code: string }) => statut.code !== "archive")
     : [];
@@ -102,6 +104,7 @@ export default function ProcessusDetailPage() {
             <ProcessStatusStepper 
               statuts={statutsSansArchive} 
               currentStatut={statutActuelId}
+              isComplete={processusTermine}
             />
           </div>
         )}

@@ -5,7 +5,7 @@
 Dans une volonté de standardiser le processus d'entrée/sortie actuel des agents, la DSIUN s'est proposée d'offrir une application web dédiée au traitement de l'entrée, la sortie et la mobilité interne des agents. Vous trouverez dans ce dépôt toutes les informations nécessaires afin de découvrir et apporter votre contribution au projet.
 
 ## Table des matières
--   [À  propos]()
+- [À  propos]()
 - [🔗 Prérequis]()
 - [Installation]()
 - [🎯 Utilisation]()
