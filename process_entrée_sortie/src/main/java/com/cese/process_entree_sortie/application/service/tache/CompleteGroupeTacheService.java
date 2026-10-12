@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class CompleteGroupeTacheService implements CompleteGroupeTacheApi {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(CompleteGroupeTacheService.class);
-    
+
     private final GroupeTacheSpi groupeTacheSpi;
     private final GroupeTacheConverter converter;
     private final ProcessusSpi processusSpi;
@@ -41,9 +41,9 @@ public class CompleteGroupeTacheService implements CompleteGroupeTacheApi {
     private final com.cese.process_entree_sortie.application.service.notification.NotificationService notificationService;
     private final AgentSpi agentSpi;
     private final AgentDirectionSpi agentDirectionSpi;
-    
+
     public CompleteGroupeTacheService(
-            GroupeTacheSpi groupeTacheSpi, 
+            GroupeTacheSpi groupeTacheSpi,
             GroupeTacheConverter converter,
             ProcessusSpi processusSpi,
             TemplateProcessusSpi templateProcessusSpi,
@@ -60,142 +60,147 @@ public class CompleteGroupeTacheService implements CompleteGroupeTacheApi {
         this.agentSpi = agentSpi;
         this.agentDirectionSpi = agentDirectionSpi;
     }
-    
+
     @Override
     public GroupeTacheDTO completeGroupeTacheApi(UUID groupeTacheId) {
         InstanceGroupeTache groupe = groupeTacheSpi.findById(groupeTacheId)
-            .orElseThrow(() -> new RuntimeException("Groupe tache non trouvé avec l'ID: " + groupeTacheId));
-        
-        // Utiliser changerStatut() qui met à jour le statut si toutes les tâches sont faites
+                .orElseThrow(() -> new RuntimeException("Groupe tache non trouvé avec l'ID: " + groupeTacheId));
+
+        // Utiliser changerStatut() qui met à jour le statut si toutes les tâches sont
+        // faites
         InstanceGroupeTache groupeModifie = groupe.changerStatut();
         InstanceGroupeTache groupeSauvegarde = groupeTacheSpi.save(groupeModifie);
-        
-        // Si le groupe est maintenant terminé, vérifier si on peut passer au statut suivant
+
+        // Si le groupe est maintenant terminé, vérifier si on peut passer au statut
+        // suivant
         if (groupeSauvegarde.statut().equals(StatutTache.fait)) {
             verifierEtAvancerStatutProcessus(groupeSauvegarde.processusId());
-            
-            // Vérifier si la direction a terminé tous ses groupes et envoyer une notification
+
+            // Vérifier si la direction a terminé tous ses groupes et envoyer une
+            // notification
             TemplateProcessus template = templateProcessusSpi.findById(
-                processusSpi.findById(groupeSauvegarde.processusId())
-                    .orElseThrow(() -> new RuntimeException("Processus non trouvé"))
-                    .templateId()
-            ).orElseThrow(() -> new RuntimeException("Template non trouvé"));
-            
+                    processusSpi.findById(groupeSauvegarde.processusId())
+                            .orElseThrow(() -> new RuntimeException("Processus non trouvé"))
+                            .templateId())
+                    .orElseThrow(() -> new RuntimeException("Template non trouvé"));
+
             TemplateGroupeTache templateGroupe = template.groupeTacheList().stream()
-                .filter(tg -> tg.id().equals(groupeSauvegarde.templateId()))
-                .findFirst()
-                .orElse(null);
-            
+                    .filter(tg -> tg.id().equals(groupeSauvegarde.templateId()))
+                    .findFirst()
+                    .orElse(null);
+
             if (templateGroupe != null) {
                 notificationService.verifierEtNotifierDirectionTerminee(
-                    groupeSauvegarde.processusId(), 
-                    templateGroupe.directionId()
-                );
+                        groupeSauvegarde.processusId(),
+                        templateGroupe.directionId());
             }
         }
-        
+
         return converter.convertirEnDTO(groupeSauvegarde);
     }
-    
+
     private void verifierEtAvancerStatutProcessus(UUID processusId) {
         InstanceProcessus processus = processusSpi.findById(processusId)
-            .orElseThrow(() -> new RuntimeException("Processus non trouvé avec l'ID: " + processusId));
-        
+                .orElseThrow(() -> new RuntimeException("Processus non trouvé avec l'ID: " + processusId));
+
         // Récupérer le template pour avoir la liste des statuts
         TemplateProcessus template = templateProcessusSpi.findById(processus.templateId())
-            .orElseThrow(() -> new RuntimeException("Template processus non trouvé"));
-        
+                .orElseThrow(() -> new RuntimeException("Template processus non trouvé"));
+
         List<StatutProcessus> statuts = template.statusList();
         if (statuts == null || statuts.isEmpty()) {
             logger.warn("Aucun statut trouvé pour le template, impossible d'avancer");
             return;
         }
-        
+
         // Trouver le statut actuel
         StatutProcessus statutActuel = statuts.stream()
-            .filter(s -> s.id().equals(processus.statutId()))
-            .findFirst()
-            .orElse(null);
-        
+                .filter(s -> s.id().equals(processus.statutId()))
+                .findFirst()
+                .orElse(null);
+
         if (statutActuel == null) {
             logger.warn("Statut actuel {} non trouvé dans la liste des statuts du template", processus.statutId());
             return;
         }
-        
+
         int indexStatutActuel = statuts.indexOf(statutActuel);
         boolean estDernierStatut = indexStatutActuel >= statuts.size() - 1;
         StatutProcessus statutArchive = statuts.stream()
-            .filter(s -> "archive".equals(s.codeStatut()))
-            .findFirst()
-            .orElse(null);
+                .filter(s -> "archive".equals(s.codeStatut()))
+                .findFirst()
+                .orElse(null);
         StatutProcessus dernierStatutFonctionnel = statuts.stream()
-            .filter(s -> !"archive".equals(s.codeStatut()))
-            .reduce((first, second) -> second)
-            .orElse(null);
-        
+                .filter(s -> !"archive".equals(s.codeStatut()))
+                .reduce((first, second) -> second)
+                .orElse(null);
+
         // Récupérer tous les groupes du processus
         List<InstanceGroupeTache> tousGroupes = groupeTacheSpi.findByProcessusId(processusId);
-        
+
         // Récupérer les templates groupes pour connaître leur statut
         List<TemplateGroupeTache> templatesGroupes = template.groupeTacheList();
-        
+
         // Filtrer les groupes qui appartiennent au statut actuel
         List<InstanceGroupeTache> groupesDuStatutActuel = tousGroupes.stream()
-            .filter(g -> {
-                // Trouver le template groupe pour connaître son statut
-                TemplateGroupeTache templateGroupe = templatesGroupes.stream()
-                    .filter(tg -> tg.id().equals(g.templateId()))
-                    .findFirst()
-                    .orElse(null);
-                
-                return templateGroupe != null && 
-                       templateGroupe.statutProcessusId().equals(statutActuel.id());
-            })
-            .collect(Collectors.toList());
-        
+                .filter(g -> {
+                    // Trouver le template groupe pour connaître son statut
+                    TemplateGroupeTache templateGroupe = templatesGroupes.stream()
+                            .filter(tg -> tg.id().equals(g.templateId()))
+                            .findFirst()
+                            .orElse(null);
+
+                    return templateGroupe != null &&
+                            templateGroupe.statutProcessusId().equals(statutActuel.id());
+                })
+                .collect(Collectors.toList());
+
         // Si le statut n'a aucun groupe, on ne peut pas avancer
         if (groupesDuStatutActuel.isEmpty()) {
             logger.debug("Le statut '{}' n'a aucun groupe de tâches, pas d'avancement", statutActuel.libStatut());
             return;
         }
-        
+
         // Vérifier si tous les groupes du statut actuel sont terminés
         boolean tousGroupesTermines = groupesDuStatutActuel.stream()
-            .allMatch(g -> g.statut().equals(StatutTache.fait));
-        
+                .allMatch(g -> g.statut().equals(StatutTache.fait));
+
         // Si tous les groupes sont terminés ET qu'il y a un statut suivant
         if (tousGroupesTermines && !estDernierStatut) {
             StatutProcessus prochainStatut = statuts.get(indexStatutActuel + 1);
 
             if ("archive".equals(prochainStatut.codeStatut())) {
-                logger.info("Statut suivant '{}' est archivé, on n'avance pas automatiquement (processus {})", prochainStatut.libStatut(), processusId);
+                logger.info("Statut suivant '{}' est archivé, on n'avance pas automatiquement (processus {})",
+                        prochainStatut.libStatut(), processusId);
                 // Vérifier quand même le changement d'état de l'agent
                 verifierEtChangerEtatAgentSiNecessaire(processus);
                 // Archiver si la date de mobilité est atteinte
                 archiverProcessusSiDateAtteinte(processus, prochainStatut);
                 return;
             }
-            
-            logger.info("Tous les groupes du statut '{}' sont terminés, passage au statut suivant '{}'", 
-                       statutActuel.libStatut(), prochainStatut.libStatut());
-            
+
+            logger.info("Tous les groupes du statut '{}' sont terminés, passage au statut suivant '{}'",
+                    statutActuel.libStatut(), prochainStatut.libStatut());
+
             // Mettre à jour le processus avec le nouveau statut
             InstanceProcessus processusModifie = processus.changerStatut(prochainStatut.id());
             processusSpi.save(processusModifie);
-            
+
             logger.info("Processus {} avancé au statut {}", processusId, prochainStatut.libStatut());
-            
-            // Activer automatiquement les tâches et groupes sans dépendances du nouveau statut
+
+            // Activer automatiquement les tâches et groupes sans dépendances du nouveau
+            // statut
             activerTachesSansDependanceService.activerTachesSansDependance(processusId);
-            
-            // Si on vient de passer au dernier statut fonctionnel, vérifier l'archivage immédiat
+
+            // Si on vient de passer au dernier statut fonctionnel, vérifier l'archivage
+            // immédiat
             if (dernierStatutFonctionnel != null
-                && prochainStatut.id().equals(dernierStatutFonctionnel.id())
-                && statutArchive != null) {
+                    && prochainStatut.id().equals(dernierStatutFonctionnel.id())
+                    && statutArchive != null) {
                 verifierEtChangerEtatAgentSiNecessaire(processusModifie);
                 archiverProcessusSiDateAtteinte(processusModifie, statutArchive);
             }
-            
+
             // Important: ne pas rappeler verifierEtAvancerStatutProcessus ici
         } else if (tousGroupesTermines && estDernierStatut) {
             // Tous les groupes sont terminés ET on est au dernier statut
@@ -208,7 +213,7 @@ public class CompleteGroupeTacheService implements CompleteGroupeTacheApi {
             logger.debug("Pas tous les groupes du statut actuel sont terminés, pas d'avancement");
         }
     }
-    
+
     /**
      * Vérifie si on est au dernier statut et la date de mobilisation est atteinte,
      * puis change l'état de l'agent au statut suivant selon le type de processus :
@@ -217,60 +222,101 @@ public class CompleteGroupeTacheService implements CompleteGroupeTacheApi {
      * - sortie → ancien
      */
     private void verifierEtChangerEtatAgentSiNecessaire(InstanceProcessus processus) {
+
+        if (processus.typeProcessus() == TypeProcessus.entree) {
+            TemplateProcessus template = templateProcessusSpi.findById(processus.templateId())
+                    .orElseThrow(() -> new RuntimeException("Template processus non trouvé"));
+
+            StatutProcessus dernierStatutFonctionnel = template.statusList().stream()
+                    .filter(statut -> !"archive".equals(statut.codeStatut()))
+                    .reduce((premier, suivant) -> suivant)
+                    .orElse(null);
+
+            List<InstanceGroupeTache> groupes = groupeTacheSpi.findByProcessusId(processus.id());
+
+            boolean toutesLesTachesSontTerminees = groupes != null
+                    && !groupes.isEmpty()
+                    && groupes.stream().allMatch(
+                            groupe -> groupe.statut() == StatutTache.fait);
+
+            boolean processusAuDernierStatut = dernierStatutFonctionnel != null
+                    && processus.statutId().equals(dernierStatutFonctionnel.id());
+
+            if (toutesLesTachesSontTerminees && processusAuDernierStatut) {
+                AgentPersonnel agent = agentSpi.findById(processus.agentId())
+                        .orElseThrow(() -> new RuntimeException(
+                                "Agent non trouvé avec l'ID: " + processus.agentId()));
+
+                if (agent.etatAgent() == EtatAgent.entree) {
+                    agentSpi.save(agent.changerEtatAgent(EtatAgent.actif));
+                    logger.info(
+                            "Toutes les tâches du processus d'entrée {} sont terminées : agent {} passé de 'entree' à 'actif'",
+                            processus.id(),
+                            agent.id());
+                }
+            }
+
+            return;
+        }
         try {
-            logger.info("Vérif changement état agent (processus {}, type {})", processus.id(), processus.typeProcessus());
+            logger.info("Vérif changement état agent (processus {}, type {})", processus.id(),
+                    processus.typeProcessus());
             AgentPersonnel agent = agentSpi.findById(processus.agentId())
-                .orElseThrow(() -> new RuntimeException("Agent non trouvé avec l'ID: " + processus.agentId()));
-            
+                    .orElseThrow(() -> new RuntimeException("Agent non trouvé avec l'ID: " + processus.agentId()));
+
             LocalDate aujourdhui = LocalDate.now();
             boolean doitChangerEtat = false;
             EtatAgent nouvelEtat = null;
-            
+
             LocalDate dateMobilite = null;
-            if (processus.typeProcessus() == TypeProcessus.entree || processus.typeProcessus() == TypeProcessus.mobitliteInterne) {
+            if (processus.typeProcessus() == TypeProcessus.entree
+                    || processus.typeProcessus() == TypeProcessus.mobitliteInterne) {
                 dateMobilite = agentDirectionSpi.findCurrentByAgentId(agent.id())
-                    .map(ad -> ad.dateArrivee())
-                    .orElse(null);
+                        .map(ad -> ad.dateArrivee())
+                        .orElse(null);
             } else if (processus.typeProcessus() == TypeProcessus.sortie) {
                 dateMobilite = agentDirectionSpi.findByAgentId(agent.id())
-                    .stream()
-                    .filter(ad -> ad.dateDepart() != null)
-                    .findFirst()
-                    .map(ad -> ad.dateDepart())
-                    .orElse(null);
+                        .stream()
+                        .filter(ad -> ad.dateDepart() != null)
+                        .findFirst()
+                        .map(ad -> ad.dateDepart())
+                        .orElse(null);
             }
 
             logger.info("Date mobilité trouvée: {} (aujourd'hui: {})", dateMobilite, aujourdhui);
-            
+
             if (dateMobilite != null && !dateMobilite.isAfter(aujourdhui)) {
                 if (processus.typeProcessus() == TypeProcessus.entree && agent.etatAgent() == EtatAgent.entree) {
                     doitChangerEtat = true;
                     nouvelEtat = EtatAgent.actif;
-                    logger.info("Date de mobilisation ({}) atteinte pour l'agent {}, passage de 'entree' à 'actif'", 
-                               dateMobilite, agent.id());
-                } else if (processus.typeProcessus() == TypeProcessus.mobitliteInterne && agent.etatAgent() == EtatAgent.mobiliteInterne) {
+                    logger.info("Date de mobilisation ({}) atteinte pour l'agent {}, passage de 'entree' à 'actif'",
+                            dateMobilite, agent.id());
+                } else if (processus.typeProcessus() == TypeProcessus.mobitliteInterne
+                        && agent.etatAgent() == EtatAgent.mobiliteInterne) {
                     doitChangerEtat = true;
                     nouvelEtat = EtatAgent.actif;
-                    logger.info("Date de mobilisation ({}) atteinte pour l'agent {}, passage de 'mobiliteInterne' à 'actif'", 
-                               dateMobilite, agent.id());
+                    logger.info(
+                            "Date de mobilisation ({}) atteinte pour l'agent {}, passage de 'mobiliteInterne' à 'actif'",
+                            dateMobilite, agent.id());
                 } else if (processus.typeProcessus() == TypeProcessus.sortie && agent.etatAgent() == EtatAgent.sortie) {
                     doitChangerEtat = true;
                     nouvelEtat = EtatAgent.ancien;
-                    logger.info("Date de mobilisation ({}) atteinte pour l'agent {}, passage de 'sortie' à 'ancien'", 
-                               dateMobilite, agent.id());
+                    logger.info("Date de mobilisation ({}) atteinte pour l'agent {}, passage de 'sortie' à 'ancien'",
+                            dateMobilite, agent.id());
                 }
             }
-            
+
             if (doitChangerEtat && nouvelEtat != null) {
                 AgentPersonnel agentModifie = agent.changerEtatAgent(nouvelEtat);
                 agentSpi.save(agentModifie);
                 logger.info("État de l'agent {} changé de '{}' à '{}'", agent.id(), agent.etatAgent(), nouvelEtat);
             } else {
-                logger.info("Aucun changement d'état agent requis (etatAgent={}, typeProcessus={})", agent.etatAgent(), processus.typeProcessus());
+                logger.info("Aucun changement d'état agent requis (etatAgent={}, typeProcessus={})", agent.etatAgent(),
+                        processus.typeProcessus());
             }
         } catch (Exception e) {
-            logger.error("Erreur lors de la vérification et changement d'état de l'agent pour le processus {}: {}", 
-                        processus.id(), e.getMessage(), e);
+            logger.error("Erreur lors de la vérification et changement d'état de l'agent pour le processus {}: {}",
+                    processus.id(), e.getMessage(), e);
             // Ne pas bloquer le processus en cas d'erreur
         }
     }
@@ -281,17 +327,18 @@ public class CompleteGroupeTacheService implements CompleteGroupeTacheApi {
             LocalDate aujourdhui = LocalDate.now();
             LocalDate dateMobilite = null;
 
-            if (processus.typeProcessus() == TypeProcessus.entree || processus.typeProcessus() == TypeProcessus.mobitliteInterne) {
+            if (processus.typeProcessus() == TypeProcessus.entree
+                    || processus.typeProcessus() == TypeProcessus.mobitliteInterne) {
                 dateMobilite = agentDirectionSpi.findCurrentByAgentId(processus.agentId())
-                    .map(AgentDirection::dateArrivee)
-                    .orElse(null);
+                        .map(AgentDirection::dateArrivee)
+                        .orElse(null);
             } else if (processus.typeProcessus() == TypeProcessus.sortie) {
                 dateMobilite = agentDirectionSpi.findByAgentId(processus.agentId())
-                    .stream()
-                    .filter(ad -> ad.dateDepart() != null)
-                    .findFirst()
-                    .map(AgentDirection::dateDepart)
-                    .orElse(null);
+                        .stream()
+                        .filter(ad -> ad.dateDepart() != null)
+                        .findFirst()
+                        .map(AgentDirection::dateDepart)
+                        .orElse(null);
             }
 
             if (dateMobilite == null || dateMobilite.isAfter(aujourdhui)) {

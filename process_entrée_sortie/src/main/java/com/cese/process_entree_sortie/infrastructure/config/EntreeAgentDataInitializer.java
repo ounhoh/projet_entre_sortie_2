@@ -1376,7 +1376,7 @@ public class EntreeAgentDataInitializer extends ProcessusDataInitializer {
             Map<String, Object> validationEmail = new HashMap<>();
             validationEmail.put("minLength", 1);
             validationEmail.put("maxLength", 50);
-            validationEmail.put("pattern", "^[a-zA-Z0-9._%+-]+@lecese\\.fr$");
+            //validationEmail.put("pattern", "^[a-zA-Z0-9._%+-]+@lecese\\.fr$");
             emailAgent.put("validation", validationEmail);
             champs.add(emailAgent);
            

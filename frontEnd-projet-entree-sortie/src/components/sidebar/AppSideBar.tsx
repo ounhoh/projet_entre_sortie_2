@@ -27,7 +27,7 @@ export const Menuitems = [
          description:"Vue sur l'ensemble des processus de sortie"
         },   {
          title:"Mobilité Interne",
-         url:"/dashboard/list_mobilite_interne",
+         url: "/mobilite-interne",
          titrePage: "Mobilté Interne",
          description:"Vue sur l'ensemble des mobilités internes"
         },

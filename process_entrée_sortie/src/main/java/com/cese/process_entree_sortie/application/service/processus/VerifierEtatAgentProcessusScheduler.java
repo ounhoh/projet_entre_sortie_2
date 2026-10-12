@@ -32,9 +32,9 @@ public class VerifierEtatAgentProcessusScheduler {
     private final AgentDirectionSpi agentDirectionSpi;
 
     public VerifierEtatAgentProcessusScheduler(ProcessusSpi processusSpi,
-                                               TemplateProcessusSpi templateProcessusSpi,
-                                               AgentSpi agentSpi,
-                                               AgentDirectionSpi agentDirectionSpi) {
+            TemplateProcessusSpi templateProcessusSpi,
+            AgentSpi agentSpi,
+            AgentDirectionSpi agentDirectionSpi) {
         this.processusSpi = processusSpi;
         this.templateProcessusSpi = templateProcessusSpi;
         this.agentSpi = agentSpi;
@@ -58,59 +58,63 @@ public class VerifierEtatAgentProcessusScheduler {
             }
 
             StatutProcessus statutActuel = template.statusList().stream()
-                .filter(s -> s.id().equals(processus.statutId()))
-                .findFirst()
-                .orElse(null);
+                    .filter(s -> s.id().equals(processus.statutId()))
+                    .findFirst()
+                    .orElse(null);
             if (statutActuel == null) {
-                logger.debug("Skip processus {}: statutActuel introuvable (statutId={})", processus.id(), processus.statutId());
+                logger.debug("Skip processus {}: statutActuel introuvable (statutId={})", processus.id(),
+                        processus.statutId());
                 return;
             }
 
             StatutProcessus statutArchive = template.statusList().stream()
-                .filter(s -> "archive".equals(s.codeStatut()))
-                .findFirst()
-                .orElse(null);
+                    .filter(s -> "archive".equals(s.codeStatut()))
+                    .findFirst()
+                    .orElse(null);
             if (statutArchive != null && statutActuel.id().equals(statutArchive.id())) {
                 logger.debug("Skip processus {}: déjà archivé", processus.id());
                 return;
             }
 
             StatutProcessus dernierStatutFonctionnel = template.statusList().stream()
-                .filter(s -> !"archive".equals(s.codeStatut()))
-                .reduce((first, second) -> second)
-                .orElse(null);
+                    .filter(s -> !"archive".equals(s.codeStatut()))
+                    .reduce((first, second) -> second)
+                    .orElse(null);
             if (dernierStatutFonctionnel == null || !statutActuel.id().equals(dernierStatutFonctionnel.id())) {
                 logger.debug(
-                    "Skip processus {}: pas au dernier statut fonctionnel (actuel={}, dernier={})",
-                    processus.id(),
-                    statutActuel.codeStatut(),
-                    dernierStatutFonctionnel != null ? dernierStatutFonctionnel.codeStatut() : null
-                );
+                        "Skip processus {}: pas au dernier statut fonctionnel (actuel={}, dernier={})",
+                        processus.id(),
+                        statutActuel.codeStatut(),
+                        dernierStatutFonctionnel != null ? dernierStatutFonctionnel.codeStatut() : null);
+                return;
+            }
+
+            if (processus.typeProcessus() == TypeProcessus.entree) {
                 return;
             }
 
             LocalDate aujourdHui = LocalDate.now();
             LocalDate dateMobilite = null;
-            if (processus.typeProcessus() == TypeProcessus.entree || processus.typeProcessus() == TypeProcessus.mobitliteInterne) {
+            if (processus.typeProcessus() == TypeProcessus.entree
+                    || processus.typeProcessus() == TypeProcessus.mobitliteInterne) {
                 dateMobilite = agentDirectionSpi.findCurrentByAgentId(processus.agentId())
-                    .map(AgentDirection::dateArrivee)
-                    .orElse(null);
+                        .map(AgentDirection::dateArrivee)
+                        .orElse(null);
             } else if (processus.typeProcessus() == TypeProcessus.sortie) {
                 dateMobilite = agentDirectionSpi.findByAgentId(processus.agentId())
-                    .stream()
-                    .filter(ad -> ad.dateDepart() != null)
-                    .findFirst()
-                    .map(AgentDirection::dateDepart)
-                    .orElse(null);
+                        .stream()
+                        .filter(ad -> ad.dateDepart() != null)
+                        .findFirst()
+                        .map(AgentDirection::dateDepart)
+                        .orElse(null);
             }
 
             if (dateMobilite == null || dateMobilite.isAfter(aujourdHui)) {
                 logger.debug(
-                    "Skip processus {}: dateMobilite invalide (dateMobilite={}, aujourdHui={})",
-                    processus.id(),
-                    dateMobilite,
-                    aujourdHui
-                );
+                        "Skip processus {}: dateMobilite invalide (dateMobilite={}, aujourdHui={})",
+                        processus.id(),
+                        dateMobilite,
+                        aujourdHui);
                 return;
             }
 
@@ -123,7 +127,8 @@ public class VerifierEtatAgentProcessusScheduler {
             EtatAgent nouvelEtat = null;
             if (processus.typeProcessus() == TypeProcessus.entree && agent.etatAgent() == EtatAgent.entree) {
                 nouvelEtat = EtatAgent.actif;
-            } else if (processus.typeProcessus() == TypeProcessus.mobitliteInterne && agent.etatAgent() == EtatAgent.mobiliteInterne) {
+            } else if (processus.typeProcessus() == TypeProcessus.mobitliteInterne
+                    && agent.etatAgent() == EtatAgent.mobiliteInterne) {
                 nouvelEtat = EtatAgent.actif;
             } else if (processus.typeProcessus() == TypeProcessus.sortie && agent.etatAgent() == EtatAgent.sortie) {
                 nouvelEtat = EtatAgent.ancien;
@@ -135,11 +140,10 @@ public class VerifierEtatAgentProcessusScheduler {
                 logger.info("Agent {} mis à jour au statut {} (processus {})", agent.id(), nouvelEtat, processus.id());
             } else {
                 logger.debug(
-                    "Skip processus {}: état agent incompatible (typeProcessus={}, etatAgent={})",
-                    processus.id(),
-                    processus.typeProcessus(),
-                    agent.etatAgent()
-                );
+                        "Skip processus {}: état agent incompatible (typeProcessus={}, etatAgent={})",
+                        processus.id(),
+                        processus.typeProcessus(),
+                        agent.etatAgent());
             }
 
             if (statutArchive != null) {
@@ -148,7 +152,8 @@ public class VerifierEtatAgentProcessusScheduler {
                 logger.info("Processus {} archivé (statut {})", processus.id(), statutArchive.libStatut());
             }
         } catch (Exception e) {
-            logger.warn("Erreur lors de la mise à jour de l'état de l'agent pour le processus {}: {}", processus.id(), e.getMessage());
+            logger.warn("Erreur lors de la mise à jour de l'état de l'agent pour le processus {}: {}", processus.id(),
+                    e.getMessage());
         }
     }
 }

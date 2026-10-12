@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
-import Home, { CreationProcessPage, Historique, ListeAgent, ProcessPage, ProcessusDetailPageComponent, AgentDetailPageComponent, ProcessusEditor, ProcessusActifsPageComponent } from './page'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home, { CreationProcessPage, Historique, ListeAgent, ProcessPage, ProcessusDetailPageComponent, AgentDetailPageComponent, ProcessusEditor, ProcessusActifsPageComponent, PersonnelActifMobilitePageComponent} from './page'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import PageLogin from './components/Login/Login'
 import { Toaster } from './components/ui/sonner'
 
@@ -29,8 +29,9 @@ function App() {
         <Route path="/processus/:processusId" element={<ProcessusDetailPageComponent open={open} setOpen={setOpen} />} />
         <Route path="/agent/:agentId" element={<AgentDetailPageComponent open={open} setOpen={setOpen} />} />
         <Route path="/processus-editor" element={<ProcessusEditor open={open} setOpen={setOpen} />} />
-        <Route path="/processus-en-cours/:type"element={<ProcessusActifsPageComponent open={open} setOpen={setOpen} />}
-        />
+        <Route path="/processus-en-cours/:type" element={<ProcessusActifsPageComponent open={open} setOpen={setOpen} />} />
+        <Route path="/mobilite-interne" element={<PersonnelActifMobilitePageComponent open={open} setOpen={setOpen} />} />
+
 
       </Routes>
       <Toaster closeButton />

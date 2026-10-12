@@ -88,8 +88,8 @@ export default function ProcessusActifsPage() {
     }
 
     return (
-        <div className="flex h-full min-h-0 flex-col p-8">
-            <h2 className="mb-4 text-xl font-bold">
+        <div className="flex h-full min-h-0 flex-col bg-slate-50 p-6 lg:p-8 dark:bg-background">
+            <h2 className="mb-4 border-b border-slate-200 pb-4 text-xl font-semibold tracking-tight text-slate-900 dark:border-border dark:text-foreground">
                 Processus d&apos;{processType === "entree" ? "entrée" : labels[processType]}
                 {" "}en cours
             </h2>

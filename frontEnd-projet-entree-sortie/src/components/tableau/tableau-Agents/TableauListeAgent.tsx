@@ -83,7 +83,7 @@ const TableauListeAgent =  () => {
     return (
         <div className="p-8 gap-4 flex flex-col h-full min-h-0">
         <div className="mb-8 px-4 py-2 bg-secondary rounded-md shrink-0">
-            <span className="font-semibold text-white">Liste des utilisateurs</span>
+            <span className="font-semibold text-blue">Liste des utilisateurs</span>
         </div> 
 
         <div className="mb-3 shrink-0 flex items-center gap-3">

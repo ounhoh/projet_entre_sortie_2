@@ -14,7 +14,7 @@ type BarreRechercheProps = {
 export  const BarreRecherche = ({value, onChange}: BarreRechercheProps) => 
 {
     return (
-      <InputGroup className="shadow-md rounded-lg min-w-fit w-full max-w-xl">
+      <InputGroup className="min-w-fit w-full max-w-xl rounded-sm border border-slate-200 shadow-sm dark:border-border">
         <InputGroupInput placeholder="Recherche..." 
         value={value}
         onChange={(e) => onChange(e.target.value)}/>
@@ -22,7 +22,7 @@ export  const BarreRecherche = ({value, onChange}: BarreRechercheProps) =>
         <Search/>
         </InputGroupAddon>
         <InputGroupAddon align="inline-end">
-          <InputGroupButton variant="secondary" className="rounded-lg"><SearchIcon/></InputGroupButton>
+          <InputGroupButton variant="secondary" className="rounded-sm"><SearchIcon/></InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
 
@@ -31,7 +31,7 @@ export  const BarreRecherche = ({value, onChange}: BarreRechercheProps) =>
 
 export const ButtonFiltre = () => {
     return (
-        <Button variant={"outline"}  size={"sm"} className="rounded-lg shadow-md w-fit max-w-[150px]">
+        <Button variant={"outline"}  size={"sm"} className="rounded-sm shadow-sm w-fit max-w-[150px]">
             Filtre
         </Button>
 

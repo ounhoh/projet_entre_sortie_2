@@ -104,33 +104,38 @@ export const ProcessusEditorPage = () => {
     }, []);
 
 
-    return (<div className="p-8 flex flex-col gap-4 h-full min-h-0">
-        <div>
-            <div className="mb-8 px-4 py-2 bg-secondary rounded-md shrink-0">
-                <span className="font-semibold text-white">Liste des processus</span>
-            </div>
-            <h2>Processus d'entrée</h2>
+    return (<div className="flex h-full min-h-0 flex-col gap-4 overflow-auto p-8">
+        <div className="mb-4 border-b border-border pb-4">
+            <span className="font-semibold text-foreground">Liste des processus</span>
+        </div>
+        <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
+            <section className="min-w-0 space-y-3">
+            <h2 className="text-lg font-semibold text-foreground">Processus d'entrée</h2>
             {listeTemplateProcessus(
                 templatesProcessusEntree,
                 navigate,
                 getIconEntree(),
                 "entree"
             )}
-            <h2>Processus de mobilité interne</h2>
+            </section>
+            <section className="min-w-0 space-y-3">
+            <h2 className="text-lg font-semibold text-foreground">Processus de mobilité interne</h2>
             {listeTemplateProcessus(
                 templatesProcessusMobilite,
                 navigate,
                 getIconMobiliteInterne(),
                 "mobilite_interne"
             )}
-
-            <h2>Processus de sortie</h2>
+            </section>
+            <section className="min-w-0 space-y-3">
+            <h2 className="text-lg font-semibold text-foreground">Processus de sortie</h2>
             {listeTemplateProcessus(
                 templatesProcessusSortie,
                 navigate,
                 getIconSortie(),
                 "sortie"
             )}
+            </section>
         </div>
     </div>
     )

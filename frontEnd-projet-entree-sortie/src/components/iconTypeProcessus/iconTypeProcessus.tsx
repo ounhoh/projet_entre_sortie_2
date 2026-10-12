@@ -15,14 +15,21 @@ export const getIconSortie = (onClick?: () => void) : JSX.Element => {
     </Button>)
 }
 
-export const getIconMobiliteInterne = () : JSX.Element  => {
-    return (<Button className="bg-amber-500" size={"icon"}>
-        <ArrowLeftRight/>
-    </Button>)
-}
+export const getIconMobiliteInterne = (onClick?: () => void): JSX.Element => {
+    return (
+        <Button
+            className="bg-amber-500"
+            size="icon"
+            onClick={onClick}
+        >
+            <ArrowLeftRight />
+        </Button>
+    );
+};
 
-export const getIconAllProcess = () : JSX.Element  =>{
-    return (<Button className="bg-blue-500" size={"icon"}>
+export const getIconAllProcess = (onClick?: () => void) : JSX.Element  =>{
+    return (
+    <Button className="bg-blue-500" size={"icon"} onClick={onClick}>
         <Users/>
     </Button>)
 }

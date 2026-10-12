@@ -98,7 +98,7 @@ const TableauProcess = ({ data, search, onSearchChange, fixedType }: TableauProc
     return (
         <div className="flex flex-col h-full min-h-0 w-full">
             <div className="mb-8 px-4 py-2 bg-secondary rounded-md shrink-0">
-                <span className="font-semibold text-white">Liste des processus</span>
+                <span className="font-semibold text-blue">Liste des processus</span>
             </div>
 
             {/* Cartes de catégories - Commentées */}

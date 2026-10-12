@@ -11,6 +11,7 @@ import ProcessusDetailPage from "./components/contenuPage/processus/contenu_proc
 import AgentDetailPage from "./components/contenuPage/agent/AgentDetailPage";
 import { ProcessusEditorPage } from "./components/contenuPage/processus/ProcessusEditor";
 import ProcessusActifsPage from "./components/contenuPage/processus/ProcessusActifsPage";
+import PersonnelActifMobilitePage from "./components/contenuPage/processus/PersonnelActifMobilitePage";
 
 type SidebarProps = { open: boolean; 
     setOpen: React.Dispatch<React.SetStateAction<boolean>>; };
@@ -151,6 +152,23 @@ export function ProcessusActifsPageComponent({ open, setOpen }: SidebarProps) {
                 />
                 <div className="flex-1 min-h-0 overflow-auto">
                     <ProcessusActifsPage />
+                </div>
+            </SidebarInset>
+        </SidebarProvider>
+    );
+}
+
+export function PersonnelActifMobilitePageComponent({ open, setOpen }: SidebarProps) {
+    return (
+        <SidebarProvider open={open} onOpenChange={setOpen}>
+            <AppSideBar />
+            <SidebarInset className="flex min-h-0 flex-col">
+                <SiteHeader
+                    titrePage="Mobilité interne"
+                    description="Liste du personnel actif"
+                />
+                <div className="flex-1 min-h-0 overflow-auto">
+                    <PersonnelActifMobilitePage />
                 </div>
             </SidebarInset>
         </SidebarProvider>

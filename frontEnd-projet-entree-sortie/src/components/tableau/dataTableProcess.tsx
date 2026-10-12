@@ -98,9 +98,9 @@ export function DataTableProcess<TData, TValue>({
       </div>
 
       {/* Tableau avec hauteur fixe et scroll */}
-      <div className="overflow-auto rounded-md border flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-auto rounded-sm border border-slate-200 bg-white dark:border-border dark:bg-card">
         <Table>
-          <TableHeader className="bg-cese-bleu-azure">
+          <TableHeader className="bg-slate-100 dark:bg-slate-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -129,7 +129,7 @@ export function DataTableProcess<TData, TValue>({
                       onRowClick(row.original)
                     }
                   }}
-                  className={onRowClick ? "cursor-pointer hover:bg-accent/50 transition-colors" : ""}
+                  className={onRowClick ? "cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" : ""}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

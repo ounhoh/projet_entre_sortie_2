@@ -7,28 +7,18 @@ import { processusService } from "@/service/processusService";
 import { mapProcessusToProcess } from "@/utils/processusMapper";
 import { useNavigate } from "react-router-dom";
 
-function StatCard({description, valeur, icon, headerColor} : {description: string ; valeur: number; icon:JSX.Element; headerColor?: string})
+function StatCard({description, valeur, icon} : {description: string ; valeur: number; icon:JSX.Element})
 {
     return (
-        <Card className="w-full max-w-xs shadow-sm pt-0 gap-0 overflow-hidden relative">
-            <CardHeader className={`pt-4 px-6 pb-3 rounded-t-xl ${headerColor ? headerColor : "bg-blue-500"} mx-0`}>
-                <CardTitle className="text-sm font-medium text-white">{description}</CardTitle>
+        <Card className="w-full max-w-xs gap-0 overflow-hidden border-slate-200 bg-white py-0 shadow-sm dark:border-border dark:bg-card">
+            <CardHeader className="px-5 pb-0 pt-5">
+                <CardTitle className="text-sm font-medium text-slate-600 dark:text-muted-foreground">{description}</CardTitle>
             </CardHeader>
-            <CardContent className="relative px-6 py-6 ">
-                {/* Motif d'onde décoratif en bas à droite */}
-                <div className="absolute bottom-0 right-0 w-48 h-20 opacity-10">
-                    <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="none">
-                        <path d="M0,60 Q75,30 150,60 T300,60 T450,60" stroke="currentColor" strokeWidth="2" fill="none" className="text-cese-bleu-principal dark:text-blue-200"/>
-                        <path d="M0,75 Q75,45 150,75 T300,75 T450,75" stroke="currentColor" strokeWidth="2" fill="none" className="text-cese-bleu-secondaire dark:text-blue-300"/>
-                        <path d="M0,90 Q75,60 150,90 T300,90 T450,90" stroke="currentColor" strokeWidth="2" fill="none" className="text-cese-rouge-secondaire dark:text-red-200"/>
-                        <path d="M0,105 Q75,75 150,105 T300,105 T450,105" stroke="currentColor" strokeWidth="2" fill="none" className="text-cese-bleu-principal dark:text-blue-200"/>
-                    </svg>
-                </div>
-                
-                <div className="flex items-start justify-between relative z-10">
+            <CardContent className="relative flex items-center justify-between px-5 pb-5 pt-3">
+                <div className="relative z-10 flex w-full items-center justify-between">
                     {/* Grand nombre à gauche */}
                     <div className="flex flex-col">
-                        <div className="text-5xl font-bold">{valeur}</div>
+                        <div className="text-4xl font-semibold tracking-tight text-slate-900 dark:text-foreground">{valeur}</div>
                     </div>
                     
                     {/* Icône à droite */}
@@ -103,7 +93,7 @@ export function BodyPage() {
         });
     }, [data, search]);
 
-    console.log("filteredData :", filteredData);
+    //console.log("filteredData :", filteredData);
 
     // Calculer les statistiques basées sur les données filtrées
     const entreNombre = useMemo(() => 
@@ -122,12 +112,12 @@ export function BodyPage() {
     );
 
     return (
-        <div className="p-8 flex flex-col gap-4 h-full min-h-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
-                <StatCard description="Processus en cours" valeur={entreNombre + sortieNombre + mobiliteNombre} icon={getIconAllProcess()} headerColor="bg-blue-500"/>
-                <StatCard description="Entrée" valeur={entreNombre} icon={getIconEntree(() => navigate("/process_entree"))} headerColor="bg-green-500"/>
-                <StatCard description="Sortie" valeur={sortieNombre} icon={getIconSortie(() => navigate("/process_sortie"))} headerColor="bg-red-500"/>
-                <StatCard description="Mobilité Interne" valeur={mobiliteNombre} icon={getIconMobiliteInterne()} headerColor="bg-amber-500"/>
+        <div className="flex h-full min-h-0 flex-col gap-5 bg-slate-50 p-6 lg:p-8 dark:bg-background">
+            <div className="grid shrink-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard description="Processus en cours" valeur={entreNombre + sortieNombre + mobiliteNombre} icon={getIconAllProcess(() => navigate("/processus-editor"))}/>
+                <StatCard description="Entrée" valeur={entreNombre} icon={getIconEntree(() => navigate("/process_entree"))}/>
+                <StatCard description="Sortie" valeur={sortieNombre} icon={getIconSortie(() => navigate("/process_sortie"))}/>
+                <StatCard description="Mobilité Interne" valeur={mobiliteNombre} icon={getIconMobiliteInterne(() => navigate("/mobilite-interne"))}/>
             </div>
            
 
@@ -138,13 +128,13 @@ export function BodyPage() {
             )}
             
             {error && (
-                <div className="flex items-center justify-center p-8 text-red-500">
+                <div className="flex items-center justify-center p-8 text-sm text-red-700 dark:text-red-300">
                     <p>{error}</p>
                 </div>
             )}
 
             {!loading && !error && (
-                <div className="w-full rounded-lg flex-1 min-h-0 flex flex-col">
+                <div className="flex w-full min-h-0 flex-1 flex-col">
                     <TableauProcess data={data} search={search} onSearchChange={setSearch}/>
                 </div>
             )}
